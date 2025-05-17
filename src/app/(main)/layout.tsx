@@ -5,7 +5,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div>
       <Header />
-      {children}
+      <div className="container mx-auto lg:px-48 mt-20 ">{children}</div>
     </div>
   );
 }
