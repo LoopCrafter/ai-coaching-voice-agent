@@ -1,19 +1,27 @@
 "use client";
 import { useQuery } from "convex/react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
 import { CoachingExpert, Expert } from "@/utils/consts/Options";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { debug } from "console";
+import dynamic from "next/dynamic";
+
+let silenceTimeout: ReturnType<typeof setTimeout>;
 
 const DiscussionRoom = () => {
   const { roomId } = useParams();
   const { user } = useUser();
+  const recorder = useRef<any | null>(null);
+  const realtimeTranscriber = useRef<{
+    transcribe: (buffer: ArrayBuffer) => Promise<void>;
+  } | null>(null);
+
   console.log("user", user);
   const [expert, setExpert] = useState<Expert | null>(null);
+  const [enableMic, setEnableMic] = useState(false);
   const discussionRoom = useQuery(api.DiscussionRoom.getDiscussionRoom, {
     id: roomId as any,
   });
@@ -27,6 +35,53 @@ const DiscussionRoom = () => {
       setExpert(selectedExpert);
     }
   }, [discussionRoom]);
+
+  const handleConnect = async () => {
+    if (typeof window === "undefined" || typeof navigator === "undefined") {
+      console.error("Browser environment not supported");
+      return;
+    }
+    let stream = null;
+    setEnableMic(true);
+    try {
+      const RecordRTCModule = await import("recordrtc");
+      const RecordRTC = RecordRTCModule.default || RecordRTCModule;
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recorder.current = new RecordRTC(stream, {
+        type: "audio",
+        mimeType: "audio/webm;codecs=pcm",
+        recorderType: RecordRTC.StereoAudioRecorder,
+        timeSlice: 250,
+        desiredSampRate: 16000,
+        numberOfAudioChannels: 1,
+        bufferSize: 4096,
+        audioBitsPerSecond: 128000,
+        ondataavailable: async (blob) => {
+          if (!realtimeTranscriber.current) return;
+          const buffer = await blob.arrayBuffer();
+          // Example: Send buffer to transcription service
+          await realtimeTranscriber.current.transcribe(buffer);
+          silenceTimeout = setTimeout(() => {
+            console.log("User stopped talking");
+            //handleDisconnect(); // Stop recording on silence
+          }, 2000);
+        },
+      });
+      // recorder.current.startRecording();
+    } catch (err) {
+      console.error("Failed to access microphone:", err);
+      // Notify user (e.g., show UI error)
+    }
+  };
+
+  const handleDisconnect = (e: any) => {
+    e.preventDefault();
+    if (recorder.current) {
+      recorder.current.pauseRecording();
+      recorder.current = null;
+      setEnableMic(false);
+    }
+  };
 
   return (
     <div>
@@ -58,7 +113,13 @@ const DiscussionRoom = () => {
             </div>
           </div>
           <div className="flex justify-center items-center mt-4">
-            <Button>Connect</Button>
+            {!enableMic ? (
+              <Button onClick={handleConnect}>Connect</Button>
+            ) : (
+              <Button variant="destructive" onClick={handleDisconnect}>
+                disconnect
+              </Button>
+            )}
           </div>
         </div>
         <div>
