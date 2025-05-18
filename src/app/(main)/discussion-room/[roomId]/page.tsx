@@ -7,21 +7,21 @@ import { CoachingExpert, Expert } from "@/utils/consts/Options";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import dynamic from "next/dynamic";
-
-let silenceTimeout: ReturnType<typeof setTimeout>;
 
 const DiscussionRoom = () => {
   const { roomId } = useParams();
   const { user } = useUser();
-  const recorder = useRef<any | null>(null);
-  const realtimeTranscriber = useRef<{
-    transcribe: (buffer: ArrayBuffer) => Promise<void>;
-  } | null>(null);
+  const [liveTranscript, setLiveTranscript] = useState("");
+  const [finalTranscripts, setFinalTranscripts] = useState<string[]>([]);
+
+  const deepgramSocket = useRef<WebSocket | null>(null);
 
   console.log("user", user);
   const [expert, setExpert] = useState<Expert | null>(null);
-  const [enableMic, setEnableMic] = useState(false);
+  const [micStatus, setMicStatus] = useState<
+    "idle" | "connecting" | "listening"
+  >("idle");
+
   const discussionRoom = useQuery(api.DiscussionRoom.getDiscussionRoom, {
     id: roomId as any,
   });
@@ -37,50 +37,59 @@ const DiscussionRoom = () => {
   }, [discussionRoom]);
 
   const handleConnect = async () => {
-    if (typeof window === "undefined" || typeof navigator === "undefined") {
-      console.error("Browser environment not supported");
-      return;
-    }
-    let stream = null;
-    setEnableMic(true);
-    try {
-      const RecordRTCModule = await import("recordrtc");
-      const RecordRTC = RecordRTCModule.default || RecordRTCModule;
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      recorder.current = new RecordRTC(stream, {
-        type: "audio",
-        mimeType: "audio/webm;codecs=pcm",
-        recorderType: RecordRTC.StereoAudioRecorder,
-        timeSlice: 250,
-        desiredSampRate: 16000,
-        numberOfAudioChannels: 1,
-        bufferSize: 4096,
-        audioBitsPerSecond: 128000,
-        ondataavailable: async (blob) => {
-          if (!realtimeTranscriber.current) return;
-          const buffer = await blob.arrayBuffer();
-          // Example: Send buffer to transcription service
-          await realtimeTranscriber.current.transcribe(buffer);
-          silenceTimeout = setTimeout(() => {
-            console.log("User stopped talking");
-            //handleDisconnect(); // Stop recording on silence
-          }, 2000);
-        },
+    setMicStatus("connecting");
+    const deepgramApiKey = process.env.DEEPGRAM_API_KEY ?? "";
+    const url = `wss://api.deepgram.com/v1/listen?punctuate=true&language=en`;
+
+    const socket = new WebSocket(url, ["token", deepgramApiKey]);
+    deepgramSocket.current = socket;
+
+    socket.onopen = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+
+      mediaRecorder.addEventListener("dataavailable", async (event) => {
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(event.data);
+        }
       });
-      // recorder.current.startRecording();
-    } catch (err) {
-      console.error("Failed to access microphone:", err);
-      // Notify user (e.g., show UI error)
-    }
+      setMicStatus("listening");
+      mediaRecorder.start(250); // Send chunks every 250ms
+    };
+
+    socket.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      const transcript = data.channel?.alternatives[0]?.transcript;
+      if (transcript) {
+        console.log("Live Transcript:", transcript);
+        // Set this to state if needed
+      }
+      if (transcript && !data.is_final) {
+        setLiveTranscript(transcript);
+      }
+
+      if (transcript && data.is_final) {
+        setFinalTranscripts((prev) => [...prev, transcript]);
+        setLiveTranscript("");
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error("Deepgram socket error:", error);
+    };
+
+    socket.onclose = () => {
+      console.log("Deepgram connection closed");
+    };
   };
 
   const handleDisconnect = (e: any) => {
     e.preventDefault();
-    if (recorder.current) {
-      recorder.current.pauseRecording();
-      recorder.current = null;
-      setEnableMic(false);
+    if (deepgramSocket.current) {
+      deepgramSocket.current.close();
+      deepgramSocket.current = null;
     }
+    setMicStatus("idle");
   };
 
   return (
@@ -113,7 +122,7 @@ const DiscussionRoom = () => {
             </div>
           </div>
           <div className="flex justify-center items-center mt-4">
-            {!enableMic ? (
+            {micStatus === "idle" ? (
               <Button onClick={handleConnect}>Connect</Button>
             ) : (
               <Button variant="destructive" onClick={handleDisconnect}>
@@ -125,6 +134,25 @@ const DiscussionRoom = () => {
         <div>
           <div className="bg-secondary h-[60vh] rounded-4xl items-center justify-center border flex flex-col relative">
             <h2>Chat Section</h2>
+            <div className="mt-4 p-4 border rounded-xl bg-muted text-primary font-mono space-y-1 text-sm">
+              {finalTranscripts.map((t, idx) => (
+                <p key={idx}>{t}</p>
+              ))}
+              {liveTranscript && (
+                <p className="italic text-muted-foreground">{liveTranscript}</p>
+              )}
+            </div>
+            <div className="mt-4 p-4 border rounded-xl bg-muted text-primary font-mono min-h-[40px]">
+              {liveTranscript ? (
+                <p>{liveTranscript}</p>
+              ) : micStatus === "connecting" ? (
+                <p className="opacity-50 italic">Connecting to microphone...</p>
+              ) : micStatus === "listening" ? (
+                <p className="opacity-50 italic">Listening...</p>
+              ) : (
+                <p className="opacity-50 italic">Click connect to start</p>
+              )}
+            </div>
           </div>
           <h3 className="mt-4 text-gray-400 text-sm">
             {" "}
