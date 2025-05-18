@@ -1,22 +1,37 @@
 "use client";
 import { useQuery } from "convex/react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
-import { CoachingExpert, Expert } from "@/utils/consts/Options";
+import {
+  Coach,
+  CoachingExpert,
+  CoachingOptions,
+  Expert,
+} from "@/utils/consts/Options";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { AIModel } from "@/service/GlobalServices";
+import { Loader2Icon, LoaderCircle } from "lucide-react";
+import ChatBox from "@/components/pages/discussionRoom/chatBox";
+
+export type Conversation = {
+  role: "user" | "assistant";
+  content: string;
+  reasoning?: any;
+  refusal?: any;
+};
 
 const DiscussionRoom = () => {
   const { roomId } = useParams();
   const { user } = useUser();
   const [liveTranscript, setLiveTranscript] = useState("");
   const [finalTranscripts, setFinalTranscripts] = useState<string[]>([]);
-
+  const [coachingOption, setCoachingOption] = useState<Coach | null>(null);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const deepgramSocket = useRef<WebSocket | null>(null);
 
-  console.log("user", user);
   const [expert, setExpert] = useState<Expert | null>(null);
   const [micStatus, setMicStatus] = useState<
     "idle" | "connecting" | "listening"
@@ -31,6 +46,12 @@ const DiscussionRoom = () => {
     const selectedExpert = CoachingExpert.find(
       (expert) => expert.name === discussionRoom.expertName
     );
+    const coachingItem = CoachingOptions.find(
+      (option) => option.name === discussionRoom.coachingOption
+    );
+    if (coachingItem) {
+      setCoachingOption(coachingItem);
+    }
     if (selectedExpert) {
       setExpert(selectedExpert);
     }
@@ -38,9 +59,10 @@ const DiscussionRoom = () => {
 
   const handleConnect = async () => {
     setMicStatus("connecting");
-    const deepgramApiKey = process.env.DEEPGRAM_API_KEY ?? "";
+    const deepgramApiKey = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY ?? "";
     const url = `wss://api.deepgram.com/v1/listen?punctuate=true&language=en`;
 
+    debugger;
     const socket = new WebSocket(url, ["token", deepgramApiKey]);
     deepgramSocket.current = socket;
 
@@ -57,7 +79,7 @@ const DiscussionRoom = () => {
       mediaRecorder.start(250); // Send chunks every 250ms
     };
 
-    socket.onmessage = (message) => {
+    socket.onmessage = async (message) => {
       const data = JSON.parse(message.data);
       const transcript = data.channel?.alternatives[0]?.transcript;
       if (transcript) {
@@ -70,6 +92,19 @@ const DiscussionRoom = () => {
 
       if (transcript && data.is_final) {
         setFinalTranscripts((prev) => [...prev, transcript]);
+        setConversations((prev) => [
+          ...prev,
+          {
+            role: "user",
+            content: transcript,
+          },
+        ]);
+        const AIanswer = (await AIModel(
+          discussionRoom?.topic ?? "",
+          coachingOption,
+          transcript
+        )) as Conversation;
+        setConversations((prev) => [...prev, AIanswer]);
         setLiveTranscript("");
       }
     };
@@ -124,6 +159,8 @@ const DiscussionRoom = () => {
           <div className="flex justify-center items-center mt-4">
             {micStatus === "idle" ? (
               <Button onClick={handleConnect}>Connect</Button>
+            ) : micStatus === "connecting" ? (
+              <Loader2Icon className="animate-spin" />
             ) : (
               <Button variant="destructive" onClick={handleDisconnect}>
                 disconnect
@@ -132,28 +169,7 @@ const DiscussionRoom = () => {
           </div>
         </div>
         <div>
-          <div className="bg-secondary h-[60vh] rounded-4xl items-center justify-center border flex flex-col relative">
-            <h2>Chat Section</h2>
-            <div className="mt-4 p-4 border rounded-xl bg-muted text-primary font-mono space-y-1 text-sm">
-              {finalTranscripts.map((t, idx) => (
-                <p key={idx}>{t}</p>
-              ))}
-              {liveTranscript && (
-                <p className="italic text-muted-foreground">{liveTranscript}</p>
-              )}
-            </div>
-            <div className="mt-4 p-4 border rounded-xl bg-muted text-primary font-mono min-h-[40px]">
-              {liveTranscript ? (
-                <p>{liveTranscript}</p>
-              ) : micStatus === "connecting" ? (
-                <p className="opacity-50 italic">Connecting to microphone...</p>
-              ) : micStatus === "listening" ? (
-                <p className="opacity-50 italic">Listening...</p>
-              ) : (
-                <p className="opacity-50 italic">Click connect to start</p>
-              )}
-            </div>
-          </div>
+          <ChatBox conversations={conversations} />
           <h3 className="mt-4 text-gray-400 text-sm">
             {" "}
             at the end of your conversation we will automatically generate
