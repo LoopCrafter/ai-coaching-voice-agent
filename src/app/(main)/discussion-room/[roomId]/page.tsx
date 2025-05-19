@@ -12,9 +12,10 @@ import {
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { AIModel } from "@/service/GlobalServices";
+import { AIModel, convertTextToSpeech } from "@/service/GlobalServices";
 import { Loader2Icon, LoaderCircle } from "lucide-react";
 import ChatBox from "@/components/pages/discussionRoom/chatBox";
+import { ExpertName } from "@/types";
 
 export type Conversation = {
   role: "user" | "assistant";
@@ -23,13 +24,22 @@ export type Conversation = {
   refusal?: any;
 };
 
+export type DiscussionRoomData =
+  | {
+      conversation?: any;
+      coachingOption: string;
+      topic: string;
+      expertName: any;
+    }
+  | null
+  | undefined;
+
 const DiscussionRoom = () => {
   const { roomId } = useParams();
   const { user } = useUser();
-  const [liveTranscript, setLiveTranscript] = useState("");
-  const [finalTranscripts, setFinalTranscripts] = useState<string[]>([]);
   const [coachingOption, setCoachingOption] = useState<Coach | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [audioUrl, setAudioUrl] = useState<string | undefined>();
   const deepgramSocket = useRef<WebSocket | null>(null);
 
   const [expert, setExpert] = useState<Expert | null>(null);
@@ -37,9 +47,33 @@ const DiscussionRoom = () => {
     "idle" | "connecting" | "listening"
   >("idle");
 
-  const discussionRoom = useQuery(api.DiscussionRoom.getDiscussionRoom, {
-    id: roomId as any,
-  });
+  const discussionRoom: DiscussionRoomData = useQuery(
+    api.DiscussionRoom.getDiscussionRoom,
+    {
+      id: roomId as any,
+    }
+  );
+
+  useEffect(() => {
+    async function fetchData() {
+      if (conversations[conversations?.length - 1]?.role === "user") {
+        const lastTwoMessage = conversations.slice(-2);
+        const AIanswer = (await AIModel(
+          discussionRoom?.topic ?? "",
+          coachingOption,
+          lastTwoMessage
+        )) as Conversation;
+        const url = await convertTextToSpeech(
+          AIanswer.content,
+          discussionRoom?.expertName
+        );
+        console.log("uelr", url);
+        setAudioUrl(url);
+        setConversations((prev) => [...prev, AIanswer]);
+      }
+    }
+    fetchData();
+  }, [conversations]);
 
   useEffect(() => {
     if (!discussionRoom) return;
@@ -62,7 +96,6 @@ const DiscussionRoom = () => {
     const deepgramApiKey = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY ?? "";
     const url = `wss://api.deepgram.com/v1/listen?punctuate=true&language=en`;
 
-    debugger;
     const socket = new WebSocket(url, ["token", deepgramApiKey]);
     deepgramSocket.current = socket;
 
@@ -84,14 +117,9 @@ const DiscussionRoom = () => {
       const transcript = data.channel?.alternatives[0]?.transcript;
       if (transcript) {
         console.log("Live Transcript:", transcript);
-        // Set this to state if needed
-      }
-      if (transcript && !data.is_final) {
-        setLiveTranscript(transcript);
       }
 
       if (transcript && data.is_final) {
-        setFinalTranscripts((prev) => [...prev, transcript]);
         setConversations((prev) => [
           ...prev,
           {
@@ -99,13 +127,6 @@ const DiscussionRoom = () => {
             content: transcript,
           },
         ]);
-        const AIanswer = (await AIModel(
-          discussionRoom?.topic ?? "",
-          coachingOption,
-          transcript
-        )) as Conversation;
-        setConversations((prev) => [...prev, AIanswer]);
-        setLiveTranscript("");
       }
     };
 
@@ -140,7 +161,7 @@ const DiscussionRoom = () => {
                 width={200}
                 height={200}
                 key={expert.name}
-                className="w-[80px] h-[80px] rounded-full object-cover animate-pulse"
+                className={`w-[80px] h-[80px] rounded-full object-cover ${micStatus === "listening" ? "animate-pulse" : ""}`}
               />
             )}
             <h2 className="text-gray-500">{expert?.name}</h2>
@@ -153,6 +174,15 @@ const DiscussionRoom = () => {
                   height={40}
                   className="rounded-full"
                 />
+              )}
+              {!!audioUrl && (
+                <audio
+                  key={audioUrl}
+                  className="invisible absolute w-0 h-0"
+                  autoPlay
+                >
+                  <source src={audioUrl} type="audio/mp3" />
+                </audio>
               )}
             </div>
           </div>

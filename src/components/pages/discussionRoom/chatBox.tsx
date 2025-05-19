@@ -8,10 +8,11 @@ type Chat = {
 const ChatBox: FC<Chat> = ({ conversations }) => {
   return (
     <div className="bg-secondary h-[60vh] rounded-4xl items-center justify-center border flex flex-col relative">
-      <div className="flex flex-col gap-4 p-5 h-full overflow-y-auto">
+      <div className="flex flex-col gap-4 p-5 h-full overflow-y-auto w-full">
         {conversations.map((conversation) => {
           return (
             <div
+              key={conversation.content}
               className={` flex ${conversation.role === "user" ? "justify-end" : "justify-start"}`}
             >
               {conversation.role === "user" ? (
