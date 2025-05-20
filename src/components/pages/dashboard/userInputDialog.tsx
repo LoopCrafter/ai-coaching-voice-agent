@@ -17,6 +17,8 @@ import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useGeneralStore } from "@/stores/generalStore";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 type UserInputDialog = {
   children: ReactNode;
@@ -27,6 +29,8 @@ export const UserInputDialog: FC<UserInputDialog> = ({
   coachingOption,
 }) => {
   const router = useRouter();
+  const user = useGeneralStore((store) => store.user);
+  console.log("userState", user);
   const [selectedExpert, setSelectedExpert] = useState<string>("");
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
@@ -45,6 +49,7 @@ export const UserInputDialog: FC<UserInputDialog> = ({
       coachingOption: coachingOption.name,
       topic,
       expertName: selectedExpert,
+      uid: user?._id as Id<"users">,
     });
     setLoading(false);
     setOpenDialog(false);

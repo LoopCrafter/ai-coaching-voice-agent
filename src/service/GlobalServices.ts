@@ -31,6 +31,20 @@ export const AIModel = async (
   return completion.choices[0].message;
 };
 
+export const GenerateFeedbackAndNotes = async (
+  CoachingOption: string,
+  conversation: Conversation[]
+) => {
+  const option = CoachingOptions.find((coach) => coach.name === CoachingOption);
+
+  const prompt = option?.summeryPrompt;
+  const completion = await openai.chat.completions.create({
+    model: "meta-llama/llama-3.3-8b-instruct:free",
+    messages: [...conversation, { role: "assistant", content: prompt }],
+  });
+  return completion.choices[0].message;
+};
+
 export const convertTextToSpeech = async (
   text: string,
   expertName: ExpertName

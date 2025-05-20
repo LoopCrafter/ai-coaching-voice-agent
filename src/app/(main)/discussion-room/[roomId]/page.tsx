@@ -1,5 +1,5 @@
 "use client";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
@@ -16,6 +16,7 @@ import { AIModel, convertTextToSpeech } from "@/service/GlobalServices";
 import { Loader2Icon, LoaderCircle } from "lucide-react";
 import ChatBox from "@/components/pages/discussionRoom/chatBox";
 import { ExpertName } from "@/types";
+import { Id } from "../../../../../convex/_generated/dataModel";
 
 export type Conversation = {
   role: "user" | "assistant";
@@ -30,6 +31,7 @@ export type DiscussionRoomData =
       coachingOption: string;
       topic: string;
       expertName: any;
+      _id: string;
     }
   | null
   | undefined;
@@ -41,11 +43,15 @@ const DiscussionRoom = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [audioUrl, setAudioUrl] = useState<string | undefined>();
   const deepgramSocket = useRef<WebSocket | null>(null);
-
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const [enabledFeedback, setEnabledFeedback] = useState(false);
   const [expert, setExpert] = useState<Expert | null>(null);
   const [micStatus, setMicStatus] = useState<
     "idle" | "connecting" | "listening"
   >("idle");
+
+  const updateConversation = useMutation(api.DiscussionRoom.updateConversation);
 
   const discussionRoom: DiscussionRoomData = useQuery(
     api.DiscussionRoom.getDiscussionRoom,
@@ -86,6 +92,9 @@ const DiscussionRoom = () => {
     if (coachingItem) {
       setCoachingOption(coachingItem);
     }
+    if (discussionRoom?.conversation?.length) {
+      setConversations(discussionRoom.conversation);
+    }
     if (selectedExpert) {
       setExpert(selectedExpert);
     }
@@ -101,8 +110,9 @@ const DiscussionRoom = () => {
 
     socket.onopen = async () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
       const mediaRecorder = new MediaRecorder(stream);
-
+      mediaRecorderRef.current = mediaRecorder;
       mediaRecorder.addEventListener("dataavailable", async (event) => {
         if (socket.readyState === WebSocket.OPEN) {
           socket.send(event.data);
@@ -141,11 +151,52 @@ const DiscussionRoom = () => {
 
   const handleDisconnect = (e: any) => {
     e.preventDefault();
+
+    // 1. Stop the MediaRecorder
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      try {
+        mediaRecorderRef.current.stop();
+      } catch (err) {
+        console.warn("Error stopping mediaRecorder:", err);
+      }
+      mediaRecorderRef.current = null;
+    }
+
+    // 2. Stop the audio stream (microphone)
+    if (mediaStreamRef.current) {
+      try {
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      } catch (err) {
+        console.warn("Error stopping media stream:", err);
+      }
+      mediaStreamRef.current = null;
+    }
+
+    // 3. Close Deepgram WebSocket connection
     if (deepgramSocket.current) {
-      deepgramSocket.current.close();
+      try {
+        deepgramSocket.current.close();
+      } catch (err) {
+        console.warn("Error closing WebSocket:", err);
+      }
       deepgramSocket.current = null;
     }
+
+    // 4. Update conversation (optional)
+    if (discussionRoom?._id) {
+      updateConversation({
+        id: discussionRoom._id as Id<"DiscussionRoom">,
+        conversation: conversations,
+      });
+    }
+
+    // 5. Update mic status
     setMicStatus("idle");
+
+    setEnabledFeedback(true);
   };
 
   return (
@@ -199,12 +250,11 @@ const DiscussionRoom = () => {
           </div>
         </div>
         <div>
-          <ChatBox conversations={conversations} />
-          <h3 className="mt-4 text-gray-400 text-sm">
-            {" "}
-            at the end of your conversation we will automatically generate
-            feedback / notes from your conversation{" "}
-          </h3>
+          <ChatBox
+            conversations={conversations}
+            enableFeedback={enabledFeedback}
+            coachingOption={discussionRoom?.coachingOption}
+          />
         </div>
       </div>
     </div>

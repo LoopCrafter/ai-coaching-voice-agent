@@ -9,7 +9,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { isLoaded, isSignedIn, user } = useUser();
   const { user: userState, setUser, clearUser } = useGeneralStore();
   const createUser = useMutation(api.users.CreateUser);
-  console.log("userState", userState);
 
   useEffect(() => {
     if (user) {
