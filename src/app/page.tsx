@@ -1,12 +1,13 @@
-import { Navbar } from "@/components/layout";
+import { Footer, Navbar } from "@/components/layout";
 import {
   FeaturesSection,
   HeroSection,
   HowItWorksSection,
   TestimonialsSection,
+  PricingSection,
+  FaqSection,
+  CtaSection,
 } from "@/components/sections";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 export default function Home() {
   return (
@@ -16,10 +17,10 @@ export default function Home() {
       <FeaturesSection />
       <HowItWorksSection />
       <TestimonialsSection />
-      {/* <PricingSection />
-    <FaqSection />
-    <CtaSection />
-    <Footer /> */}
+      <PricingSection />
+      <FaqSection />
+      <CtaSection />
+      <Footer />
     </main>
   );
 }

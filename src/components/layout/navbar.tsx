@@ -67,12 +67,12 @@ export function Navbar() {
           {/* Auth and Theme Buttons */}
           <div className="hidden md:flex items-center gap-4">
             <ModeToggle />
-            <Link href="/login">
+            <Link href="/sign-in">
               <Button variant="outline" size="sm">
                 Log in
               </Button>
             </Link>
-            <Link href="/signup">
+            <Link href="/sign-up">
               <Button size="sm">Get Started</Button>
             </Link>
           </div>
@@ -131,12 +131,12 @@ export function Navbar() {
               </Link>
             </nav>
             <div className="flex flex-col space-y-3">
-              <Link href="/login">
+              <Link href="/sign-in">
                 <Button variant="outline" className="w-full">
                   Log in
                 </Button>
               </Link>
-              <Link href="/signup">
+              <Link href="/sign-up">
                 <Button className="w-full">Get Started</Button>
               </Link>
             </div>
