@@ -4,14 +4,16 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { useGeneralStore } from "@/stores/generalStore";
 
 export function ModeToggle() {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const theme = useGeneralStore((state) => state.theme);
+  const toggleTheme = useGeneralStore((state) => state.toggleTheme);
   const handleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    toggleTheme();
   };
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.body.classList.toggle("dark", theme === "dark");
   }, [theme]);
 

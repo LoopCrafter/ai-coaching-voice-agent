@@ -7,7 +7,7 @@ import { useGeneralStore } from "@/stores/generalStore";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { isLoaded, isSignedIn, user } = useUser();
-  const { user: userState, setUser, clearUser } = useGeneralStore();
+  const setUser = useGeneralStore((state) => state.setUser);
   const createUser = useMutation(api.users.CreateUser);
 
   useEffect(() => {

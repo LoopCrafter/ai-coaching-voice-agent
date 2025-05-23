@@ -44,13 +44,13 @@ export function HeroSection() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="/signup">
+              <Link href="/sign-in">
                 <Button size="lg" className="w-full sm:w-auto group">
-                  Get Started Free
+                  Get Started
                   <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Link href="#demo">
+              {/* <Link href="#demo">
                 <Button
                   variant="outline"
                   size="lg"
@@ -59,12 +59,12 @@ export function HeroSection() {
                   <Play className="h-4 w-4" />
                   See it in action
                 </Button>
-              </Link>
+              </Link> */}
             </div>
 
-            <p className="text-sm text-muted-foreground">
+            {/* <p className="text-sm text-muted-foreground">
               No credit card required. 7-day free trial.
-            </p>
+            </p> */}
           </motion.div>
 
           <motion.div
@@ -98,12 +98,12 @@ export function HeroSection() {
                     </div>
                   </div>
 
-                  <div className="relative z-10 text-center">
+                  <div className="relative z-10 text-center top-5">
                     <Mic className="w-16 h-16 mb-4 mx-auto text-primary animate-pulse" />
                     <h3 className="text-xl font-medium mb-2">
                       AI Listening...
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground mt-6">
                       "Tell me about your goals for public speaking..."
                     </p>
                   </div>

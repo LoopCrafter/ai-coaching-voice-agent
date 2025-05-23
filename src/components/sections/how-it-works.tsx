@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, Headphones, Brain, MessageSquare } from "lucide-react";
 import { motion, useInView } from "@/lib/motion";
+import Link from "next/link";
 
 const steps = [
   {
@@ -42,7 +43,7 @@ export function HowItWorksSection() {
   return (
     <section id="how-it-works" className="py-20">
       <div className="container px-4 sm:px-6 lg:px-8 mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-12 items-center">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               How VoiceCoach AI Works
@@ -53,34 +54,41 @@ export function HowItWorksSection() {
               experience.
             </p>
 
-            <div className="space-y-8" ref={ref}>
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+              ref={ref}
+            >
               {steps.map((step, index) => (
                 <motion.div
                   key={index}
-                  className="flex gap-4"
-                  initial={{ opacity: 0, x: -20 }}
+                  className="flex flex-col items-center text-center p-6 rounded-xl bg-card border border-border/50 hover:border-primary/50 transition-colors"
+                  initial={{ opacity: 0, y: 20 }}
                   animate={
-                    isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }
+                    isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
                   }
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <div className="flex-shrink-0 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
                     {step.icon}
                   </div>
                   <div>
-                    <h3 className="text-xl font-medium mb-2">{step.title}</h3>
-                    <p className="text-muted-foreground">{step.description}</p>
+                    <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+                    <p className="text-muted-foreground text-sm">
+                      {step.description}
+                    </p>
                   </div>
                 </motion.div>
               ))}
             </div>
 
-            <div className="mt-10">
-              <Button size="lg">Start Your Voice Journey</Button>
+            <div className="mt-10 text-center">
+              <Link href="/sign-in">
+                <Button size="lg">Start Your Voice Journey</Button>
+              </Link>
             </div>
           </div>
 
-          <motion.div
+          {/* <motion.div
             className="relative rounded-2xl overflow-hidden shadow-xl border border-muted"
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -108,7 +116,7 @@ export function HowItWorksSection() {
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
     </section>
