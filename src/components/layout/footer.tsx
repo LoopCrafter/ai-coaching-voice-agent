@@ -25,7 +25,7 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="#features"
+                  href="/#features"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Features
@@ -33,7 +33,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="#how-it-works"
+                  href="/#how-it-works"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   How It Works
@@ -41,7 +41,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="#pricing"
+                  href="/#pricing"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Pricing
@@ -49,7 +49,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="#faq"
+                  href="/#faq"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   FAQ
@@ -69,22 +69,7 @@ export function Footer() {
                   About Us
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/careers"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Careers
-                </Link>
-              </li>
+              
               <li>
                 <Link
                   href="/contact"

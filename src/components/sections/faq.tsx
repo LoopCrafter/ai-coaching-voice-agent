@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { motion } from "@/lib/motion";
+import Link from "next/link";
 
 const faqs = [
   {
@@ -94,12 +95,12 @@ export function FaqSection() {
         <div className="text-center mt-12">
           <p className="text-muted-foreground">
             Still have questions?{" "}
-            <a
+            <Link
               href="/contact"
               className="text-primary font-medium hover:underline"
             >
               Contact our support team
-            </a>
+            </Link>
           </p>
         </div>
       </div>
