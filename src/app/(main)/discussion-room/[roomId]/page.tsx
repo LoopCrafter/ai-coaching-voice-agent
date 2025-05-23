@@ -107,53 +107,124 @@ const DiscussionRoom = () => {
     }
   }, [discussionRoom]);
 
-  const handleConnect = async () => {
+  // const handleConnect = async () => {
+  //   setMicStatus("connecting");
+  //   const deepgramApiKey = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY ?? "";
+  //   const url = `wss://api.deepgram.com/v1/listen?punctuate=true&language=en`;
+
+  //   const socket = new WebSocket(url, ["token", deepgramApiKey]);
+  //   deepgramSocket.current = socket;
+
+  //   socket.onopen = async () => {
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     mediaStreamRef.current = stream;
+  //     const mediaRecorder = new MediaRecorder(stream);
+  //     mediaRecorderRef.current = mediaRecorder;
+  //     mediaRecorder.addEventListener("dataavailable", async (event) => {
+  //       if (socket.readyState === WebSocket.OPEN) {
+  //         socket.send(event.data);
+  //       }
+  //     });
+  //     setMicStatus("listening");
+  //     mediaRecorder.start(250);
+  //   };
+
+  //   socket.onmessage = async (message) => {
+  //     const data = JSON.parse(message.data);
+  //     const transcript = data.channel?.alternatives[0]?.transcript;
+  //     if (transcript) {
+  //       console.log("Live Transcript:", transcript);
+  //     }
+
+  //     if (transcript && data.is_final) {
+  //       setConversations((prev) => [
+  //         ...prev,
+  //         {
+  //           role: "user",
+  //           content: transcript,
+  //         },
+  //       ]);
+  //     }
+  //   };
+
+  //   socket.onerror = (error) => {
+  //     console.error("Deepgram socket error:", error);
+  //   };
+
+  //   socket.onclose = () => {
+  //     console.log("Deepgram connection closed");
+  //   };
+  // };
+
+  const handleConnect = () => {
     setMicStatus("connecting");
-    const deepgramApiKey = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY ?? "";
-    const url = `wss://api.deepgram.com/v1/listen?punctuate=true&language=en`;
 
-    const socket = new WebSocket(url, ["token", deepgramApiKey]);
-    deepgramSocket.current = socket;
+    if (!("webkitSpeechRecognition" in window)) {
+      console.error("Speech Recognition API not supported in this browser.");
+      setMicStatus("idle");
+      return;
+    }
 
-    socket.onopen = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaStreamRef.current = stream;
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.addEventListener("dataavailable", async (event) => {
-        if (socket.readyState === WebSocket.OPEN) {
-          socket.send(event.data);
-        }
-      });
+    const SpeechRecognition =
+      (window as any).webkitSpeechRecognition ||
+      (window as any).SpeechRecognition;
+
+    if (!SpeechRecognition) {
+      console.error("Speech Recognition API not supported");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US"; // change language if needed
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
       setMicStatus("listening");
-      mediaRecorder.start(250);
+      console.log("Speech recognition started");
     };
 
-    socket.onmessage = async (message) => {
-      const data = JSON.parse(message.data);
-      const transcript = data.channel?.alternatives[0]?.transcript;
-      if (transcript) {
-        console.log("Live Transcript:", transcript);
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      setMicStatus("idle");
+    };
+
+    recognition.onend = () => {
+      console.log("Speech recognition ended");
+      setMicStatus("idle");
+    };
+
+    recognition.onresult = (event: any) => {
+      let interimTranscript = "";
+      let finalTranscript = "";
+
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + " ";
+        } else {
+          interimTranscript += transcript;
+        }
       }
 
-      if (transcript && data.is_final) {
+      if (finalTranscript) {
         setConversations((prev) => [
           ...prev,
           {
             role: "user",
-            content: transcript,
+            content: finalTranscript.trim(),
           },
         ]);
       }
+
+      // Optionally update UI with interim transcript
+      console.log("Interim transcript:", interimTranscript);
     };
 
-    socket.onerror = (error) => {
-      console.error("Deepgram socket error:", error);
-    };
+    recognition.start();
 
-    socket.onclose = () => {
-      console.log("Deepgram connection closed");
-    };
+    // Save recognition instance to ref if you want to stop it later
+    recognition.current = recognition;
   };
 
   const handleDisconnect = (e: any) => {
