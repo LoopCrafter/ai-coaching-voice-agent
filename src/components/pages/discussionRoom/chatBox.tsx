@@ -31,43 +31,22 @@ const ChatBox: FC<Chat> = ({
     }
   }, []);
 
-  const generateFeedback = async () => {
-    setLoading(true);
-    try {
-      const feedbackResult = await GenerateFeedbackAndNotes(
-        coachingOption,
-        conversations
-      );
-      setFeedback(feedbackResult.content as string);
-      updateSummary({
-        id: roomId as Id<"DiscussionRoom">,
-        feedback: feedbackResult.content,
-      });
-      toast("Feedback Saved!");
-    } catch (e) {
-      console.log(e);
-      toast("Internal Server Error! try again later!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <>
-      <div className="bg-secondary h-[60vh] rounded-4xl items-center justify-center border flex flex-col relative">
+      <div className="bg-secondary dark:bg-gray-800 h-[60vh] rounded-4xl items-center justify-center border dark:border-gray-700 flex flex-col relative">
         <div className="flex flex-col gap-4 p-5 h-full overflow-y-auto w-full">
-          {conversations.map((conversation) => {
+          {conversations.map((conversation, index) => {
             return (
               <div
-                key={conversation.content}
-                className={` flex ${conversation.role === "user" ? "justify-end" : "justify-start"}`}
+                key={index}
+                className={`flex ${conversation.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 {conversation.role === "user" ? (
-                  <h2 className="p-1 px-2 bg-gray-200 mt-1  rounded-md ">
+                  <h2 className="p-1 px-2 bg-gray-200 dark:bg-gray-700 mt-1 rounded-md dark:text-white">
                     {conversation.content}
                   </h2>
                 ) : (
-                  <h2 className="p-1 px-2 bg-primary mt-1 text-white  rounded-md inline-block">
+                  <h2 className="p-1 px-2 bg-primary dark:bg-blue-600 mt-1 text-white rounded-md inline-block">
                     {conversation.content}
                   </h2>
                 )}
@@ -76,26 +55,6 @@ const ChatBox: FC<Chat> = ({
           })}
         </div>
       </div>
-      {!enableFeedback ? (
-        <h3 className="mt-4 text-gray-400 text-sm">
-          {" "}
-          at the end of your conversation we will automatically generate
-          feedback / notes from your conversation{" "}
-        </h3>
-      ) : (
-        <Button
-          onClick={generateFeedback}
-          disabled={loading}
-          className="mt-4 w-full"
-        >
-          {" "}
-          {loading ? (
-            <Loader2Icon className={`${loading ? "animate-spin" : ""}`} />
-          ) : (
-            "Generate Feedback"
-          )}{" "}
-        </Button>
-      )}
     </>
   );
 };

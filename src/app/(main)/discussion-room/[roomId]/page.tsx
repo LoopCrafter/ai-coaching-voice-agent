@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, {  useEffect, useRef, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
 import {
   Coach,
@@ -12,11 +12,11 @@ import {
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { AIModel, convertTextToSpeech } from "@/service/GlobalServices";
-import { Loader2Icon, LoaderCircle } from "lucide-react";
+import { AIModel, convertTextToSpeech, GenerateFeedbackAndNotes } from "@/service/GlobalServices";
+import { Loader2Icon, MessageSquare, Mic, MicOff } from "lucide-react";
 import ChatBox from "@/components/pages/discussionRoom/chatBox";
-import { ExpertName } from "@/types";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import { toast } from "sonner";
 
 export type Conversation = {
   role: "user" | "assistant";
@@ -42,11 +42,15 @@ const DiscussionRoom = () => {
   const [coachingOption, setCoachingOption] = useState<Coach | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [audioUrl, setAudioUrl] = useState<string | undefined>();
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const updateSummary = useMutation(api.DiscussionRoom.updateSummary);
   const deepgramSocket = useRef<WebSocket | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const [enabledFeedback, setEnabledFeedback] = useState(false);
   const [expert, setExpert] = useState<Expert | null>(null);
+  const [showChat, setShowChat] = useState(false);
   const [micStatus, setMicStatus] = useState<
     "idle" | "connecting" | "listening"
   >("idle");
@@ -73,7 +77,6 @@ const DiscussionRoom = () => {
           AIanswer.content,
           discussionRoom?.expertName
         );
-        console.log("uelr", url);
         setAudioUrl(url);
         setConversations((prev) => [...prev, AIanswer]);
       }
@@ -119,7 +122,7 @@ const DiscussionRoom = () => {
         }
       });
       setMicStatus("listening");
-      mediaRecorder.start(250); // Send chunks every 250ms
+      mediaRecorder.start(250);
     };
 
     socket.onmessage = async (message) => {
@@ -152,7 +155,6 @@ const DiscussionRoom = () => {
   const handleDisconnect = (e: any) => {
     e.preventDefault();
 
-    // 1. Stop the MediaRecorder
     if (
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state !== "inactive"
@@ -165,7 +167,6 @@ const DiscussionRoom = () => {
       mediaRecorderRef.current = null;
     }
 
-    // 2. Stop the audio stream (microphone)
     if (mediaStreamRef.current) {
       try {
         mediaStreamRef.current.getTracks().forEach((track) => track.stop());
@@ -175,7 +176,6 @@ const DiscussionRoom = () => {
       mediaStreamRef.current = null;
     }
 
-    // 3. Close Deepgram WebSocket connection
     if (deepgramSocket.current) {
       try {
         deepgramSocket.current.close();
@@ -185,7 +185,6 @@ const DiscussionRoom = () => {
       deepgramSocket.current = null;
     }
 
-    // 4. Update conversation (optional)
     if (discussionRoom?._id) {
       updateConversation({
         id: discussionRoom._id as Id<"DiscussionRoom">,
@@ -193,18 +192,59 @@ const DiscussionRoom = () => {
       });
     }
 
-    // 5. Update mic status
     setMicStatus("idle");
-
     setEnabledFeedback(true);
   };
 
+  const generateFeedback = async () => {
+    setLoading(true);
+    
+    try {
+      const feedbackResult = await GenerateFeedbackAndNotes(
+        discussionRoom?.coachingOption ?? "",
+        conversations
+      );
+      setFeedback(feedbackResult.content as string);
+      updateSummary({
+        id: roomId as Id<"DiscussionRoom">,
+        feedback: feedbackResult.content,
+      });
+      toast("Feedback Saved!");
+      setEnabledFeedback(false);
+    } catch (e) {
+      console.log(e);
+      toast("Internal Server Error! try again later!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div>
-      <h2 className="font-bold text-2xl">{discussionRoom?.coachingOption}</h2>
-      <div className="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-10 relative">
-        <div className="lg:col-span-2 ">
-          <div className="bg-secondary h-[60vh] rounded-4xl items-center justify-center border flex flex-col relative">
+    <div className="h-screen p-4 ">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-bold text-2xl dark:text-white">{discussionRoom?.coachingOption}</h2>
+        <div className="flex gap-4">
+          {enabledFeedback && (
+            <Button disabled={loading} variant="outline" className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 w-48" onClick={generateFeedback}>{loading ? (
+              <Loader2Icon className={`${loading ? "animate-spin" : ""}`} />
+            ) : (
+              "Generate Feedback"
+            )}</Button>
+          )}
+          <Button 
+            variant="outline" 
+            onClick={() => setShowChat(!showChat)}
+            className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+          >
+            <MessageSquare className="w-4 h-4 mr-2" />
+            {showChat ? 'Hide Chat' : 'Show Chat'}
+          </Button>
+        </div>
+      </div>
+
+      <div className={`mt-5 grid ${showChat ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-2'} gap-10 relative`}>
+        <div className={showChat ? 'lg:col-span-2' : 'col-span-1'}>
+          <div className="bg-secondary dark:bg-gray-800 h-[60vh] rounded-4xl items-center justify-center border dark:border-gray-700 flex flex-col relative">
             {expert && (
               <Image
                 src={expert?.avatar ?? ""}
@@ -215,9 +255,36 @@ const DiscussionRoom = () => {
                 className={`w-[80px] h-[80px] rounded-full object-cover ${micStatus === "listening" ? "animate-pulse" : ""}`}
               />
             )}
-            <h2 className="text-gray-500">{expert?.name}</h2>
-            <div className="p-5 bg-gray-200 px-10 rounded-lg absolute bottom-10 right-10">
-              {user && (
+            <h2 className="text-gray-500 dark:text-gray-400">{expert?.name}</h2>
+            
+            {/* Mic Control Button - Repositioned */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
+              {micStatus === "idle" ? (
+                <Button 
+                  onClick={handleConnect} 
+                  size="lg"
+                  className="rounded-full w-14 h-14 dark:bg-blue-600 dark:hover:bg-blue-700 transition-all duration-200 hover:scale-105"
+                >
+                  <Mic className="w-6 h-6" />
+                </Button>
+              ) : micStatus === "connecting" ? (
+                <div className="rounded-full w-14 h-14 bg-yellow-500 dark:bg-yellow-600 flex items-center justify-center">
+                  <Loader2Icon className="animate-spin w-6 h-6" />
+                </div>
+              ) : (
+                <Button 
+                  variant="destructive" 
+                  onClick={handleDisconnect}
+                  size="lg"
+                  className="rounded-full w-14 h-14 dark:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 hover:scale-105"
+                >
+                  <MicOff className="w-6 h-6" />
+                </Button>
+              )}
+            </div>
+            
+            {showChat && user && (
+              <div className="absolute bottom-4 right-4 bg-secondary/80 dark:bg-gray-700/80 p-2 rounded-lg flex items-center gap-2">
                 <Image
                   src={user.imageUrl}
                   alt="Profile"
@@ -225,38 +292,55 @@ const DiscussionRoom = () => {
                   height={40}
                   className="rounded-full"
                 />
-              )}
-              {!!audioUrl && (
-                <audio
-                  key={audioUrl}
-                  className="invisible absolute w-0 h-0"
-                  autoPlay
-                >
-                  <source src={audioUrl} type="audio/mp3" />
-                </audio>
-              )}
-            </div>
-          </div>
-          <div className="flex justify-center items-center mt-4">
-            {micStatus === "idle" ? (
-              <Button onClick={handleConnect}>Connect</Button>
-            ) : micStatus === "connecting" ? (
-              <Loader2Icon className="animate-spin" />
-            ) : (
-              <Button variant="destructive" onClick={handleDisconnect}>
-                disconnect
-              </Button>
+                <span className="text-sm text-gray-500 dark:text-gray-400">You</span>
+              </div>
             )}
           </div>
         </div>
-        <div>
-          <ChatBox
-            conversations={conversations}
-            enableFeedback={enabledFeedback}
-            coachingOption={discussionRoom?.coachingOption}
-          />
-        </div>
+
+        {!showChat && (
+          <div className="col-span-1">
+            <div className="bg-secondary dark:bg-gray-800 h-[60vh] rounded-4xl items-center justify-center border dark:border-gray-700 flex flex-col relative">
+              {user && (
+                <Image
+                  src={user.imageUrl}
+                  alt="Profile"
+                  width={80}
+                  height={80}
+                  className="rounded-full"
+                />
+              )}
+              <h2 className="text-gray-500 dark:text-gray-400 mt-2">You</h2>
+            </div>
+          </div>
+        )}
+
+        {showChat && (
+          <div>
+            <ChatBox
+              conversations={conversations}
+              enableFeedback={enabledFeedback}
+              coachingOption={discussionRoom?.coachingOption}
+            />
+          </div>
+        )}
       </div>
+        {feedback && (
+              <div className="mt-4 p-4 bg-secondary dark:bg-gray-800 rounded-lg border dark:border-gray-700">
+                <h3 className="font-medium mb-2 text-gray-900 dark:text-gray-100">Feedback & Notes</h3>
+                <p className="text-gray-600 dark:text-gray-300">{feedback}</p>
+              </div>
+            )}
+
+      {!!audioUrl && (
+        <audio
+          key={audioUrl}
+          className="invisible absolute w-0 h-0"
+          autoPlay
+        >
+          <source src={audioUrl} type="audio/mp3" />
+        </audio>
+      )}
     </div>
   );
 };
