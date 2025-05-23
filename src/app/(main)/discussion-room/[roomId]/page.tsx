@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQuery } from "convex/react";
 import { useParams } from "next/navigation";
-import React, {  useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { api } from "../../../../../convex/_generated/api";
 import {
   Coach,
@@ -12,7 +12,11 @@ import {
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { AIModel, convertTextToSpeech, GenerateFeedbackAndNotes } from "@/service/GlobalServices";
+import {
+  AIModel,
+  convertTextToSpeech,
+  GenerateFeedbackAndNotes,
+} from "@/service/GlobalServices";
 import { Loader2Icon, MessageSquare, Mic, MicOff } from "lucide-react";
 import ChatBox from "@/components/pages/discussionRoom/chatBox";
 import { Id } from "../../../../../convex/_generated/dataModel";
@@ -198,12 +202,17 @@ const DiscussionRoom = () => {
 
   const generateFeedback = async () => {
     setLoading(true);
-    
+
     try {
       const feedbackResult = await GenerateFeedbackAndNotes(
         discussionRoom?.coachingOption ?? "",
         conversations
       );
+      const url = await convertTextToSpeech(
+        feedbackResult.content as string,
+        discussionRoom?.expertName
+      );
+      setAudioUrl(url);
       setFeedback(feedbackResult.content as string);
       updateSummary({
         id: roomId as Id<"DiscussionRoom">,
@@ -222,28 +231,39 @@ const DiscussionRoom = () => {
   return (
     <div className="h-screen p-4 ">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="font-bold text-2xl dark:text-white">{discussionRoom?.coachingOption}</h2>
+        <h2 className="font-bold text-2xl dark:text-white">
+          {discussionRoom?.coachingOption}
+        </h2>
         <div className="flex gap-4">
           {enabledFeedback && (
-            <Button disabled={loading} variant="outline" className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 w-48" onClick={generateFeedback}>{loading ? (
-              <Loader2Icon className={`${loading ? "animate-spin" : ""}`} />
-            ) : (
-              "Generate Feedback"
-            )}</Button>
+            <Button
+              disabled={loading}
+              variant="outline"
+              className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 w-48"
+              onClick={generateFeedback}
+            >
+              {loading ? (
+                <Loader2Icon className={`${loading ? "animate-spin" : ""}`} />
+              ) : (
+                "Generate Feedback"
+              )}
+            </Button>
           )}
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => setShowChat(!showChat)}
             className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
           >
             <MessageSquare className="w-4 h-4 mr-2" />
-            {showChat ? 'Hide Chat' : 'Show Chat'}
+            {showChat ? "Hide Chat" : "Show Chat"}
           </Button>
         </div>
       </div>
 
-      <div className={`mt-5 grid ${showChat ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-2'} gap-10 relative`}>
-        <div className={showChat ? 'lg:col-span-2' : 'col-span-1'}>
+      <div
+        className={`mt-5 grid ${showChat ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-2"} gap-10 relative`}
+      >
+        <div className={showChat ? "lg:col-span-2" : "col-span-1"}>
           <div className="bg-secondary dark:bg-gray-800 h-[60vh] rounded-4xl items-center justify-center border dark:border-gray-700 flex flex-col relative">
             {expert && (
               <Image
@@ -256,12 +276,12 @@ const DiscussionRoom = () => {
               />
             )}
             <h2 className="text-gray-500 dark:text-gray-400">{expert?.name}</h2>
-            
+
             {/* Mic Control Button - Repositioned */}
             <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
               {micStatus === "idle" ? (
-                <Button 
-                  onClick={handleConnect} 
+                <Button
+                  onClick={handleConnect}
                   size="lg"
                   className="rounded-full w-14 h-14 dark:bg-blue-600 dark:hover:bg-blue-700 transition-all duration-200 hover:scale-105"
                 >
@@ -272,8 +292,8 @@ const DiscussionRoom = () => {
                   <Loader2Icon className="animate-spin w-6 h-6" />
                 </div>
               ) : (
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   onClick={handleDisconnect}
                   size="lg"
                   className="rounded-full w-14 h-14 dark:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 hover:scale-105"
@@ -282,9 +302,9 @@ const DiscussionRoom = () => {
                 </Button>
               )}
             </div>
-            
+
             {showChat && user && (
-              <div className="absolute bottom-4 right-4 bg-secondary/80 dark:bg-gray-700/80 p-2 rounded-lg flex items-center gap-2">
+              <div className="absolute bottom-4 right-4 bg-secondary/80 dark:bg-gray-700/80 rounded-lg flex items-center gap-2 shadow-lg p-4">
                 <Image
                   src={user.imageUrl}
                   alt="Profile"
@@ -292,7 +312,9 @@ const DiscussionRoom = () => {
                   height={40}
                   className="rounded-full"
                 />
-                <span className="text-sm text-gray-500 dark:text-gray-400">You</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  You
+                </span>
               </div>
             )}
           </div>
@@ -325,19 +347,39 @@ const DiscussionRoom = () => {
           </div>
         )}
       </div>
-        {feedback && (
-              <div className="mt-4 p-4 bg-secondary dark:bg-gray-800 rounded-lg border dark:border-gray-700">
-                <h3 className="font-medium mb-2 text-gray-900 dark:text-gray-100">Feedback & Notes</h3>
-                <p className="text-gray-600 dark:text-gray-300">{feedback}</p>
-              </div>
-            )}
+      {feedback && (
+        <div className="mt-4 p-4 bg-secondary dark:bg-gray-800 rounded-lg border dark:border-gray-700">
+          <h3 className="font-medium mb-2 text-gray-900 dark:text-gray-100">
+            Feedback & Notes
+          </h3>
+          <p className="text-gray-600 dark:text-gray-300">
+            {feedback.split("").map((char, index) => (
+              <span
+                key={index}
+                style={{
+                  animation: `fadeIn 0.1s ${index * 0.02}s forwards`,
+                  opacity: 0,
+                }}
+              >
+                {char}
+              </span>
+            ))}
+          </p>
+          <style jsx>{`
+            @keyframes fadeIn {
+              from {
+                opacity: 0;
+              }
+              to {
+                opacity: 1;
+              }
+            }
+          `}</style>
+        </div>
+      )}
 
       {!!audioUrl && (
-        <audio
-          key={audioUrl}
-          className="invisible absolute w-0 h-0"
-          autoPlay
-        >
+        <audio key={audioUrl} className="invisible absolute w-0 h-0" autoPlay>
           <source src={audioUrl} type="audio/mp3" />
         </audio>
       )}
