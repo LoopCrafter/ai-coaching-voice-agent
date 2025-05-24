@@ -51,3 +51,15 @@ export const updateSummary = mutation({
     });
   },
 });
+
+export const getDiscussionsHistory = query({
+  args: { uid: v.id("users") },
+  handler: async (ctx, args) => {
+    const results = await ctx.db
+      .query("DiscussionRoom")
+      .filter((q) => q.eq(q.field("uid"), args.uid))
+      .collect();
+
+    return results;
+  },
+});

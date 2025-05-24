@@ -1,10 +1,26 @@
-import React from "react";
+import { getDiscussionHistoryServer } from "@/lib/convexServer";
+import { clerkClient as getClerkClient, auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
-export const History = () => {
-  return (
-    <div>
-      <h2 className="text-lg font-bold">Your Previous Lectures: </h2>
-      <h2 className="text-gray-400">You don't have any previous lectures </h2>
-    </div>
+export default async function History() {
+  const { userId } = await auth();
+
+  if (!userId) return redirect("/sign-in");
+
+  const clerkClient = await getClerkClient();
+  const user = await clerkClient.users.getUser(userId);
+
+  const email = user.emailAddresses[0]?.emailAddress;
+
+  if (!email) return <div>Email not found</div>;
+
+  const res = await fetch(
+    `http://localhost:3000/api/user?email=${encodeURIComponent(email)}`
   );
-};
+  const userData = await res.json();
+
+  if (!userData?._id) return <div>User not found</div>;
+  const history = await getDiscussionHistoryServer(userData._id);
+  console.log("++++gg", history);
+  return <div>User email: {email}</div>;
+}

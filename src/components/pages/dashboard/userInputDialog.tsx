@@ -30,7 +30,6 @@ export const UserInputDialog: FC<UserInputDialog> = ({
 }) => {
   const router = useRouter();
   const user = useGeneralStore((store) => store.user);
-  console.log("userState", user);
   const [selectedExpert, setSelectedExpert] = useState<string>("");
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
