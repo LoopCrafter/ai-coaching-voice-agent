@@ -1,50 +1,33 @@
-// app/api/discussionRoom/route.ts
-import { callConvexFunction } from "@/lib/callConvex";
-import { NextRequest, NextResponse } from "next/server";
+import { ConvexClient } from "convex/browser";
+import { NextResponse } from "next/server";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
+
+const convex = new ConvexClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 // GET: /api/discussionRoom?id=xyz
-export async function GET(req: NextRequest) {
-  const url = new URL(req.url);
-  const id = url.searchParams.get("id");
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
 
   if (!id) {
-    return NextResponse.json({ error: "ID is required" }, { status: 400 });
-  }
-
-  try {
-    const data = await callConvexFunction("getDiscussionRoom", "query", {
-      id,
-    });
-
-    return NextResponse.json(data);
-  } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Convex query failed" },
-      { status: 500 }
+      { error: "id query parameter is required" },
+      { status: 400 }
     );
   }
-}
-
-// POST: /api/discussionRoom
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { coachingOption, topic, expertName } = body;
-
-  if (!coachingOption || !topic || !expertName) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-  }
-
   try {
-    const result = await callConvexFunction("CreateNewRoom", "mutation", {
-      coachingOption,
-      topic,
-      expertName,
+    const user = await convex.query(api.DiscussionRoom.getDiscussionRoom, {
+      id: id as Id<"DiscussionRoom">,
     });
-
-    return NextResponse.json({ id: result });
-  } catch (error: any) {
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    return NextResponse.json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
     return NextResponse.json(
-      { error: error.message || "Convex mutation failed" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }

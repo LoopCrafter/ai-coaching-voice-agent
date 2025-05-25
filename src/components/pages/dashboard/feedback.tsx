@@ -6,6 +6,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getFormattedTime } from "@/lib/getFormattedTime";
 import Link from "next/link";
+import { getAbstractImage } from "@/lib/getAbstractImage";
 
 export default async function Feedback() {
   const { userId } = await auth();
@@ -27,15 +28,6 @@ export default async function Feedback() {
   if (!userData?._id) return <div>User not found</div>;
   const history = await getDiscussionHistoryServer(userData._id);
 
-  const getAbstractImage = (option: string): any => {
-    const coachingOption = CoachingOptions.find(
-      (coach) => coach.name === option
-    );
-    if (coachingOption) {
-      return coachingOption.abstract;
-    }
-    return "/lecture.png";
-  };
   return (
     <div>
       <h2 className="text-lg font-bold">Feedback: </h2>

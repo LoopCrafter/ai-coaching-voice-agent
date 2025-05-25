@@ -14,6 +14,8 @@ export type DiscussionRoomData =
       topic: string;
       expertName: any;
       _id: string;
+      _creationTime: string;
+      summary: string;
     }
   | null
   | undefined;
