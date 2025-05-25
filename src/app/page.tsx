@@ -11,7 +11,7 @@ import {
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <div>
       <HeroSection />
       <FeaturesSection />
       <HowItWorksSection />
@@ -19,7 +19,6 @@ export default function Home() {
       <PricingSection />
       <FaqSection />
       {/* <CtaSection /> */}
-      
-    </main>
+    </div>
   );
 }

@@ -21,24 +21,7 @@ import { Loader2Icon, MessageSquare, Mic, MicOff } from "lucide-react";
 import ChatBox from "@/components/pages/discussionRoom/chatBox";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
-
-export type Conversation = {
-  role: "user" | "assistant";
-  content: string;
-  reasoning?: any;
-  refusal?: any;
-};
-
-export type DiscussionRoomData =
-  | {
-      conversation?: any;
-      coachingOption: string;
-      topic: string;
-      expertName: any;
-      _id: string;
-    }
-  | null
-  | undefined;
+import { Conversation, DiscussionRoomData } from "@/types";
 
 const DiscussionRoom = () => {
   const { roomId } = useParams();

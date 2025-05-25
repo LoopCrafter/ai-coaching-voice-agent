@@ -58,6 +58,7 @@ export const getDiscussionsHistory = query({
     const results = await ctx.db
       .query("DiscussionRoom")
       .filter((q) => q.eq(q.field("uid"), args.uid))
+      .order("desc")
       .collect();
 
     return results;

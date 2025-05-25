@@ -34,7 +34,7 @@ export default function RootLayout({
         >
           <ConvexClientProvider>
             <Navbar />
-            {children}
+            <main className="min-h-[80vh]">{children}</main>
             <Footer />
           </ConvexClientProvider>
           <Toaster />

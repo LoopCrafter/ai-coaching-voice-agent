@@ -1,4 +1,5 @@
-import { FeatureAssistant, Feedback } from "@/components/pages";
+import { FeatureAssistant } from "@/components/pages";
+import Feedback from "@/components/pages/dashboard/feedback";
 import History from "@/components/pages/dashboard/history";
 
 export default function DashboardPage() {
