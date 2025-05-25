@@ -20,6 +20,7 @@ export async function GET(request: Request) {
     const user = await convex.query(api.DiscussionRoom.getDiscussionRoom, {
       id: id as Id<"DiscussionRoom">,
     });
+    console.log("---------", user, id);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }

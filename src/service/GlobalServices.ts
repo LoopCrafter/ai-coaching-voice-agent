@@ -1,5 +1,4 @@
-import { Conversation } from "@/app/(main)/discussion-room/[roomId]/page";
-import { ExpertName } from "@/types";
+import { Conversation, ExpertName } from "@/types";
 import { Coach, CoachingOptions } from "@/utils/consts/Options";
 import { PollyClient, SynthesizeSpeechCommand } from "@aws-sdk/client-polly";
 import OpenAI from "openai";
@@ -38,6 +37,7 @@ export const GenerateFeedbackAndNotes = async (
   const option = CoachingOptions.find((coach) => coach.name === CoachingOption);
 
   const prompt = option?.summeryPrompt;
+  debugger;
   const completion = await openai.chat.completions.create({
     model: "meta-llama/llama-3.3-8b-instruct:free",
     messages: [...conversation, { role: "assistant", content: prompt }],

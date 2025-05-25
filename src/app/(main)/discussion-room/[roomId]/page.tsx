@@ -19,10 +19,10 @@ import {
 } from "@/service/GlobalServices";
 import { Loader2Icon, MessageSquare, Mic, MicOff } from "lucide-react";
 import ChatBox from "@/components/pages/discussionRoom/chatBox";
-import { Id } from "../../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { Conversation, DiscussionRoomData } from "@/types";
 import { User, useGeneralStore } from "@/stores/generalStore";
+import { Id } from "../../../../../convex/_generated/dataModel";
 
 const DiscussionRoom = () => {
   const { roomId } = useParams();
@@ -290,6 +290,7 @@ const DiscussionRoom = () => {
   const updateUserTokenMethod = async (text: string) => {
     const tokenCount = text.trim() ? text.trim().length : 0;
     console.log();
+    console.log("user data", userData);
     const result = await updateUserToken({
       id: userData?._id as Id<"users">,
       credits: Number(userData?.credit) - Number(tokenCount),

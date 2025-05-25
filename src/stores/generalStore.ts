@@ -6,6 +6,7 @@ export type User = {
   _id?: string;
   credit: number;
   subscriptionId?: string;
+  avatar: string;
 };
 type GeneralStore = {
   user?: User;

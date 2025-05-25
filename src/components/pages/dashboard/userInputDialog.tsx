@@ -44,6 +44,7 @@ export const UserInputDialog: FC<UserInputDialog> = ({
 
   const handleNext = async () => {
     setLoading(true);
+    debugger;
     const result = await createDiscussionRoom({
       coachingOption: coachingOption.name,
       topic,

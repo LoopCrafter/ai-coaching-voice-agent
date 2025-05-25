@@ -1,18 +1,13 @@
 import ChatBox from "@/components/pages/discussionRoom/chatBox";
 import Summarybox from "@/components/pages/summary/Summarybox";
+import { getDiscussionById } from "@/lib/discussions";
 import { getAbstractImage } from "@/lib/getAbstractImage";
 import { getFormattedTime } from "@/lib/getFormattedTime";
-import { DiscussionRoomData } from "@/types";
 import Image from "next/image";
-import React from "react";
 
 const Summary = async ({ params }: { params: Promise<{ roomId: string }> }) => {
   const { roomId } = await params;
-  const res = await fetch(
-    `${process.env.NEXT_BASE_URL}/discussionRoom?id=${roomId}`
-  );
-  const discussion: DiscussionRoomData = await res.json();
-  console.log("+++++++", discussion);
+  const discussion = await getDiscussionById(roomId);
   return (
     <div>
       <div className="flex justify-between items-end mb-6">

@@ -9,7 +9,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { isLoaded, isSignedIn, user } = useUser();
   const setUser = useGeneralStore((state) => state.setUser);
   const createUser = useMutation(api.users.CreateUser);
-
   useEffect(() => {
     if (user) {
       createNewUser();
@@ -20,10 +19,10 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (user) {
       const email = user.primaryEmailAddress?.emailAddress || "";
       const name = user?.fullName || "";
-
       const result = await createUser({
         name,
         email,
+        avatar: user?.imageUrl ?? "",
       });
       setUser(result);
     }
