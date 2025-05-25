@@ -22,12 +22,16 @@ import ChatBox from "@/components/pages/discussionRoom/chatBox";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { toast } from "sonner";
 import { Conversation, DiscussionRoomData } from "@/types";
+import { User, useGeneralStore } from "@/stores/generalStore";
 
 const DiscussionRoom = () => {
   const { roomId } = useParams();
   const { user } = useUser();
+  const userData = useGeneralStore((state) => state.user);
+  const setUserData = useGeneralStore((state) => state.setUser);
   const [coachingOption, setCoachingOption] = useState<Coach | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const updateUserToken = useMutation(api.users.updateUserToken);
   const [audioUrl, setAudioUrl] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -66,6 +70,7 @@ const DiscussionRoom = () => {
         );
         setAudioUrl(url);
         setConversations((prev) => [...prev, AIanswer]);
+        await updateUserTokenMethod(AIanswer.content);
       }
     }
     fetchData();
@@ -177,7 +182,7 @@ const DiscussionRoom = () => {
       setMicStatus("idle");
     };
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = async (event: any) => {
       let interimTranscript = "";
       let finalTranscript = "";
 
@@ -198,6 +203,7 @@ const DiscussionRoom = () => {
             content: finalTranscript.trim(),
           },
         ]);
+        await updateUserTokenMethod(finalTranscript.trim());
       }
 
       // Optionally update UI with interim transcript
@@ -280,6 +286,19 @@ const DiscussionRoom = () => {
     } finally {
       setLoading(false);
     }
+  };
+  const updateUserTokenMethod = async (text: string) => {
+    const tokenCount = text.trim() ? text.trim().length : 0;
+    console.log();
+    const result = await updateUserToken({
+      id: userData?._id as Id<"users">,
+      credits: Number(userData?.credit) - Number(tokenCount),
+    });
+    //@ts-ignore
+    setUserData((prev: User) => ({
+      ...prev,
+      credit: Number(userData?.credit) - Number(tokenCount),
+    }));
   };
 
   return (

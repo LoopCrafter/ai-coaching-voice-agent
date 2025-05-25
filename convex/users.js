@@ -43,3 +43,15 @@ export const getUserByEmail = query({
     return users.length > 0 ? users[0] : null;
   },
 });
+
+export const updateUserToken = mutation({
+  args: {
+    id: v.id("users"),
+    credits: v.number(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, {
+      credit: args.credits,
+    });
+  },
+});
