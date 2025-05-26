@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Coach, CoachingExpert, Expert } from "@/utils/consts/Options";
+import { Coach, CoachingExpert } from "@/utils/consts/Options";
 import { FC, ReactNode, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
@@ -49,9 +49,6 @@ export const UserInputDialog: FC<UserInputDialog> = ({
     },
   });
   const user = useGeneralStore((store) => store.user);
-  const [selectedExpert, setSelectedExpert] = useState<ExpertName | undefined>(
-    undefined
-  );
 
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -68,7 +65,7 @@ export const UserInputDialog: FC<UserInputDialog> = ({
     });
     setLoading(false);
     setOpenDialog(false);
-    router.push(`/discussion-room/${result}`);
+    router.push(`/dashboard/workspace/${result}`);
   };
 
   const onSubmit = (values: CoachSchemaType) => {
