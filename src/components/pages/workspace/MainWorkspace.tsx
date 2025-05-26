@@ -18,6 +18,7 @@ import ChatBox from "../discussionRoom/chatBox";
 import { CoachingExpert } from "@/utils/consts/Options";
 import { useDiscussion } from "@/hooks";
 import { useGeneralStore } from "@/stores/generalStore";
+import Markdown from "react-markdown";
 import Screening from "./screening";
 type MainWorkspace = {
   discussion: DiscussionRoomData;
@@ -33,7 +34,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
   const deepgramSocket = useRef<WebSocket | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
-
+  const updateUserToken = useMutation(api.users.updateUserToken);
   const user = useGeneralStore((state) => state.user);
 
   const [showChat, setShowChat] = useState(false);
@@ -52,7 +53,6 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
           discussion?.coachingOption ?? "",
           conversations
         );
-        debugger;
 
         await updateSummary({
           id: roomId as Id<"DiscussionRoom">,
@@ -79,7 +79,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
   );
 
   const expert = useMemo(() => {
-    return CoachingExpert.find((el) => (el.name = discussion?.expertName));
+    return CoachingExpert.find((el) => el.name === discussion?.expertName);
   }, [discussion, CoachingExpert]);
 
   const handleConnect = async () => {
@@ -130,14 +130,56 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
       console.log("Deepgram connection closed");
     };
   };
+
   const handleDisconnect = () => {
     setEnabledFeedback(true);
+    // Stop the media recorder if it exists and is recording
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.stop();
+    }
+
+    // Stop all tracks of the media stream to release the mic
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+
+    // Close the WebSocket connection if open
+    if (
+      deepgramSocket.current &&
+      deepgramSocket.current.readyState === WebSocket.OPEN
+    ) {
+      deepgramSocket.current.close();
+      deepgramSocket.current = null;
+    }
+
+    // Reset recorder ref
+    mediaRecorderRef.current = null;
+
+    // Update mic status
+    setMicStatus("idle");
   };
 
   const handleClickGenerateFeedback = () => {
     startTransition(() => {
       generateFeedback();
     });
+  };
+
+  const updateUserTokenMethod = async (text: string) => {
+    const tokenCount = text.trim() ? text.trim().length : 0;
+    const result = await updateUserToken({
+      id: user?._id as Id<"users">,
+      credits: Number(user?.credit) - Number(tokenCount),
+    });
+    //@ts-ignore
+    setUserData((prev: User) => ({
+      ...prev,
+      credit: Number(user?.credit) - Number(tokenCount),
+    }));
   };
 
   return (
@@ -176,6 +218,14 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
           </div>
         )}
       </div>
+      {state.feedbackText && (
+        <div className="mt-4 p-4 bg-secondary dark:bg-gray-800 rounded-lg border dark:border-gray-700">
+          <h3 className="font-medium mb-2 text-gray-900 dark:text-gray-100">
+            Feedback & Notes
+          </h3>
+          <Markdown>{state.feedbackText}</Markdown>
+        </div>
+      )}
       {!!audioUrl && (
         <audio key={audioUrl} className="invisible absolute w-0 h-0" autoPlay>
           <source src={audioUrl} type="audio/mp3" />

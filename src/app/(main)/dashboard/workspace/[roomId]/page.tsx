@@ -17,7 +17,7 @@ const Workspace = async ({
   }
 
   return (
-    <div className="h-screen p-4 ">
+    <div className="p-4 ">
       <MainWorkspace discussion={discussion} roomId={roomId} />
     </div>
   );
