@@ -22,7 +22,7 @@ export const ProfileSchema = z.object({
     .min(2, "You need to enter at least 2 Characters")
     .max(40, "you need to enter at most 40 characters"),
   email: z.string().email(),
-  avatar: z.string().optional(),
+  avatar: z.any().optional(),
 });
 
 export type ProfileType = z.infer<typeof ProfileSchema>;
