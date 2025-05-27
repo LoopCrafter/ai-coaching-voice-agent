@@ -21,7 +21,7 @@ import { useGeneralStore } from "@/stores/generalStore";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
-import { CoachSchema, CoachSchemaType } from "@/utils/CoachSchema";
+import { CoachSchema, CoachSchemaType } from "@/utils/zodSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FormControl,
