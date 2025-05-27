@@ -36,7 +36,7 @@ const Summary = async ({ params }: { params: Promise<{ roomId: string }> }) => {
           <Summarybox summary={discussion?.summary} />
         </div>
         <div className="col-span-2">
-          {!!discussion?.conversation.length && (
+          {!!discussion?.conversation?.length && (
             <ChatBox
               conversations={discussion?.conversation}
               enableFeedback={false}

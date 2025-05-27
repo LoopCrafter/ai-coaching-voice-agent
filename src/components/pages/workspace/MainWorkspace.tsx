@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import ChatBox from "../discussionRoom/chatBox";
 import { CoachingExpert } from "@/utils/consts/Options";
 import { useDiscussion } from "@/hooks";
-import { useGeneralStore } from "@/stores/generalStore";
+import { User, useGeneralStore } from "@/stores/generalStore";
 import Markdown from "react-markdown";
 import Screening from "./screening";
 type MainWorkspace = {
@@ -36,14 +36,31 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const updateUserToken = useMutation(api.users.updateUserToken);
   const user = useGeneralStore((state) => state.user);
+  const setUser = useGeneralStore((state) => state.setUser);
 
   const [showChat, setShowChat] = useState(false);
   const [enabledFeedback, setEnabledFeedback] = useState(false);
+
+  const updateUserTokenMethod = async (text: string) => {
+    const tokenCount = text.trim() ? text.trim().length : 0;
+    const currentCredit = Number(user?.credit) - Number(tokenCount);
+    const result = await updateUserToken({
+      id: user?._id as Id<"users">,
+      credits: currentCredit,
+    });
+    if (user) {
+      setUser({
+        ...user,
+        credit: currentCredit,
+      });
+    }
+  };
+
   const [micStatus, setMicStatus] = useState<
     "idle" | "connecting" | "listening"
   >("idle");
   const { audioUrl, coachingOption, conversations, setConversations } =
-    useDiscussion({ discussion });
+    useDiscussion({ discussion, updateUserTokenMethod });
 
   const updateSummary = useMutation(api.DiscussionRoom.updateSummary);
   const [state, generateFeedback, isPending] = useActionState<FeedbackState>(
@@ -119,6 +136,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
             content: transcript,
           },
         ]);
+        await updateUserTokenMethod(transcript.trim());
       }
     };
 
@@ -167,19 +185,6 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
     startTransition(() => {
       generateFeedback();
     });
-  };
-
-  const updateUserTokenMethod = async (text: string) => {
-    const tokenCount = text.trim() ? text.trim().length : 0;
-    const result = await updateUserToken({
-      id: user?._id as Id<"users">,
-      credits: Number(user?.credit) - Number(tokenCount),
-    });
-    //@ts-ignore
-    setUserData((prev: User) => ({
-      ...prev,
-      credit: Number(user?.credit) - Number(tokenCount),
-    }));
   };
 
   return (

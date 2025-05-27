@@ -5,9 +5,10 @@ import React, { useEffect, useState } from "react";
 
 type Props = {
   discussion: DiscussionRoomData;
+  updateUserTokenMethod: (text: string) => void;
 };
 
-export const useDiscussion = ({ discussion }: Props) => {
+export const useDiscussion = ({ discussion, updateUserTokenMethod }: Props) => {
   const [audioUrl, setAudioUrl] = useState<string | undefined>();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [coachingOption, setCoachingOption] = useState<Coach | null>(null);
@@ -43,6 +44,7 @@ export const useDiscussion = ({ discussion }: Props) => {
         );
         setAudioUrl(url);
         setConversations((prev: Conversation[]) => [...prev, AIanswer]);
+        await updateUserTokenMethod(AIanswer.content);
       }
     }
     fetchData();

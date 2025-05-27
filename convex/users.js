@@ -18,7 +18,7 @@ export const CreateUser = mutation({
       const data = {
         name: args.name,
         email: args.email,
-        credit: 50000,
+        credit: 5000,
         avatar: args.avatar,
       };
 
