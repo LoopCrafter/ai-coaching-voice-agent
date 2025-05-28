@@ -21,7 +21,7 @@ export default async function Feedback() {
   if (!email) return <div>Email not found</div>;
 
   const res = await fetch(
-    `${process.env.NEXT_BASE_URL}/user?email=${encodeURIComponent(email)}`
+    `${process.env.NEXT_PUBLIC_BASE_URL}/user?email=${encodeURIComponent(email)}`
   );
   const userData = await res.json();
 

@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
+import { UserProfileDialog } from "./UserProfileDialog";
 
 const TopHeader = () => {
   const { user } = useUser();
@@ -14,9 +15,11 @@ const TopHeader = () => {
           Welcome Back, {user?.username || ""}
         </h3>
       </div>
-      <Button className="cursor-pointer dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700">
-        Profile
-      </Button>
+      <UserProfileDialog>
+        <Button className="cursor-pointer dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700">
+          Profile
+        </Button>
+      </UserProfileDialog>
     </div>
   );
 };
