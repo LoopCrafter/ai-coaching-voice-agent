@@ -22,7 +22,7 @@ export const updateUserProfile = async (values: ProfileType) => {
     };
   }
 
-  const { firstName, lastName, avatar, email } = parsedData.data;
+  const { firstName, lastName, avatar } = parsedData.data;
 
   try {
     await clerkClient.users.updateUser(userId, {

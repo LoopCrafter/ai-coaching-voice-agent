@@ -12,7 +12,7 @@ type Chat = {
 const ChatBox: FC<Chat> = ({ conversations }) => {
   return (
     <>
-      <div className="bg-secondary dark:bg-gray-800 h-[60vh] rounded-4xl items-center justify-center border dark:border-gray-700 flex flex-col relative">
+      <div className="bg-secondary dark:bg-gray-800 h-[40vh] lg:h-[60vh] rounded-4xl items-center justify-center border dark:border-gray-700 flex flex-col relative">
         <div className="flex flex-col gap-4 p-5 h-full overflow-y-auto w-full">
           {conversations.map((conversation, index) => {
             return (

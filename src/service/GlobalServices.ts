@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain*/
 import { Conversation, ExpertName } from "@/types";
 import { Coach, CoachingOptions } from "@/utils/consts/Options";
 import { PollyClient, SynthesizeSpeechCommand } from "@aws-sdk/client-polly";
@@ -37,7 +38,6 @@ export const GenerateFeedbackAndNotes = async (
   const option = CoachingOptions.find((coach) => coach.name === CoachingOption);
 
   const prompt = option?.summeryPrompt;
-  debugger;
   const completion = await openai.chat.completions.create({
     model: "meta-llama/llama-3.3-8b-instruct:free",
     messages: [...conversation, { role: "assistant", content: prompt }],

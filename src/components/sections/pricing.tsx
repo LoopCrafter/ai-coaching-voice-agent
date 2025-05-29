@@ -140,7 +140,7 @@ export function PricingSection() {
 
               <div className="border-t">
                 <div className="p-6 md:p-8 space-y-4">
-                  <p className="font-medium">What's included:</p>
+                  <p className="font-medium">What&#39;s included:</p>
                   <ul className="space-y-3">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start">

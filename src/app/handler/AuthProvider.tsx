@@ -9,11 +9,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
   const setUser = useGeneralStore((state) => state.setUser);
   const createUser = useMutation(api.users.CreateUser);
-  useEffect(() => {
-    if (user) {
-      createNewUser();
-    }
-  }, [user]);
 
   const createNewUser = async () => {
     if (user) {
@@ -27,6 +22,12 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(result);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      createNewUser();
+    }
+  }, [user, createNewUser]);
 
   return <div>{children}</div>;
 };

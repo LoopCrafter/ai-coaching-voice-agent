@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "motion/react";
 import { LogOut, User } from "lucide-react";
+import Image from "next/image";
 
 export const UserProfile = ({ user }: UserProfileProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +43,7 @@ export const UserProfile = ({ user }: UserProfileProps) => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-3 focus:outline-none"
       >
-        <span className="text-sm font-medium text-foreground dark:text-zinc-100">
+        <span className="text-sm font-medium text-foreground dark:text-zinc-100 hidden lg:inline-block ">
           {user?.fullName || ""}
         </span>
         <div
@@ -50,7 +51,9 @@ export const UserProfile = ({ user }: UserProfileProps) => {
             hover:border-primary/40 dark:hover:border-zinc-600 transition-colors duration-200"
         >
           {user?.imageUrl ? (
-            <img
+            <Image
+              width={45}
+              height={45}
               src={user.imageUrl}
               alt={user.fullName || "User"}
               className="w-full h-full object-cover"

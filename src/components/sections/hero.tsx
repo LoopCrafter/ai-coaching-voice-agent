@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Mic, Play, ChevronRight } from "lucide-react";
+import { Mic, ChevronRight } from "lucide-react";
 import { motion } from "@/lib/motion";
 
 export function HeroSection() {
@@ -11,7 +11,6 @@ export function HeroSection() {
 
   return (
     <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
-      {/* Background decoration */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-primary/10 to-transparent opacity-50 dark:from-primary/20" />
       </div>
@@ -104,7 +103,8 @@ export function HeroSection() {
                       AI Listening...
                     </h3>
                     <p className="text-sm text-muted-foreground mt-6">
-                      "Tell me about your goals for public speaking..."
+                      &ldquo;Tell me about your goals for public
+                      speaking...&ldquo;
                     </p>
                   </div>
                 </div>

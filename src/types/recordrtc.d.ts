@@ -1,4 +1,4 @@
-// types/recordrtc.d.ts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare module "recordrtc" {
   interface RecordRTCOptions {
     type?: string;
@@ -17,7 +17,6 @@ declare module "recordrtc" {
     startRecording(): void;
     stopRecording(): void;
     pauseRecording(): void;
-    // بقیه متدهای مورد نیاز رو اینجا اضافه کن
   }
 
   namespace RecordRTC {

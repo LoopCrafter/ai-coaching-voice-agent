@@ -6,7 +6,7 @@ export type Conversation = {
   reasoning?: any;
   refusal?: any;
 };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DiscussionRoomData =
   | {
       conversation?: any;

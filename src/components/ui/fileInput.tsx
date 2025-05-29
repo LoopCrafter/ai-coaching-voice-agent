@@ -3,18 +3,13 @@
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface FileInputProps {
   onChange: (...event: any[]) => void;
   value?: File | null;
 }
 
-export const FileInput = ({ onChange, value }: FileInputProps) => {
-  useEffect(() => {
-    if (value) {
-      console.log("Selected file: ", value);
-    }
-  }, [value]);
-
+export const FileInput = ({ onChange }: FileInputProps) => {
   return (
     <Input
       type="file"

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FC, useState } from "react";
+import { FC } from "react";
 import Webcam from "react-webcam";
 type Props = {
   userAvatar: string;
@@ -10,7 +10,7 @@ type Props = {
 const UserScreen: FC<Props> = ({ userAvatar, showChat, camIsOn }) => {
   return (
     <div
-      className={`${showChat ? "absolute bottom-4 right-4 w-[180px] h-[110px]" : "col-span-1 h-full"} bg-secondary dark:bg-gray-800  rounded-2xl items-center justify-center border dark:border-gray-700 flex flex-col overflow-hidden`}
+      className={`${showChat ? "absolute bottom-4 right-4 w-[180px] h-[110px] " : "col-span-1 w-[180px] lg:w-full h-[120px] lg:h-full absolute lg:relative bottom-5 lg:bottom-0 right-5 lg:right-0"} bg-secondary dark:bg-gray-800  rounded-2xl items-center justify-center border dark:border-gray-700 flex flex-col overflow-hidden `}
     >
       {camIsOn ? (
         <Webcam

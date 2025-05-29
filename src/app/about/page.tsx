@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { Users, Target, Award, Globe } from "lucide-react";
+import { Users, Target } from "lucide-react";
 
 const team = [
   {

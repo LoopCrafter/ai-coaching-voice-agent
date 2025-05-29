@@ -26,10 +26,10 @@ const Screening: FC<Screening> = ({
   };
   return (
     <div
-      className={`select-none ${showChat ? "col-span-2" : "col-span-1"} h-[60vh] grid grid-cols-2 gap-10 relative`}
+      className={`select-none ${showChat ? "col-span-2" : "col-span-1"} h-[60vh] grid lg:grid-cols-2 gap-10 relative`}
     >
       <div className={`${showChat ? "col-span-2" : "col-span-1"}  h-full`}>
-        <div className="bg-secondary dark:bg-gray-800 h-full rounded-4xl items-center justify-center border dark:border-gray-700 flex flex-col relative">
+        <div className="bg-secondary dark:bg-gray-800 h-full rounded-4xl items-center justify-center border dark:border-gray-700 flex flex-col lg:relative">
           <div className="flex justify-center items-center flex-col gap-1">
             {expert && (
               <Image
@@ -44,7 +44,7 @@ const Screening: FC<Screening> = ({
             <h2 className="text-gray-500 dark:text-gray-400">{expert?.name}</h2>
           </div>
 
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex justify-center items-center gap-2">
+          <div className="absolute bottom-6 left-2 lg:left-1/2 transform lg:-translate-x-1/2 flex justify-center items-center gap-2">
             <Button
               onClick={HandleConnectVideo}
               variant={camIsOn ? "destructive" : "default"}

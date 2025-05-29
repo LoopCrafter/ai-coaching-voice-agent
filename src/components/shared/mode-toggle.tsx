@@ -1,10 +1,9 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect } from "react";
 import { useGeneralStore } from "@/stores/generalStore";
 
 export function ModeToggle() {
@@ -16,8 +15,6 @@ export function ModeToggle() {
   useLayoutEffect(() => {
     document.body.classList.toggle("dark", theme === "dark");
   }, [theme]);
-
-  const { setTheme: handleThemeFunc } = useTheme();
 
   return (
     <Button

@@ -1,7 +1,7 @@
 import { AIModel, convertTextToSpeech } from "@/service/GlobalServices";
 import { Conversation, DiscussionRoomData } from "@/types";
-import { Coach, CoachingExpert, CoachingOptions } from "@/utils/consts/Options";
-import React, { useEffect, useState } from "react";
+import { Coach, CoachingOptions } from "@/utils/consts/Options";
+import { useEffect, useState } from "react";
 
 type Props = {
   discussion: DiscussionRoomData;
@@ -15,9 +15,7 @@ export const useDiscussion = ({ discussion, updateUserTokenMethod }: Props) => {
 
   useEffect(() => {
     if (!discussion) return;
-    const selectedExpert = CoachingExpert.find(
-      (expert) => expert.name === discussion.expertName
-    );
+
     const coachingItem = CoachingOptions.find(
       (option) => option.name === discussion.coachingOption
     );
@@ -48,7 +46,7 @@ export const useDiscussion = ({ discussion, updateUserTokenMethod }: Props) => {
       }
     }
     fetchData();
-  }, [conversations]);
+  }, [conversations, coachingOption]);
 
   return { audioUrl, conversations, coachingOption, setConversations };
 };

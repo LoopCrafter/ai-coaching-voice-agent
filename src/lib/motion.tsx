@@ -1,10 +1,10 @@
 "use client";
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Simple re-export of motion components
 // This helps keep our code cleaner and avoids installing the actual framer-motion
 // We can add the real library later if we want more complex animations
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const motion = {
   div: ({ whileInView, transition, animate, initial, exit, ...props }: any) => (

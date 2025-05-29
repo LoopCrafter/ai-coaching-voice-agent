@@ -18,8 +18,6 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your form submission logic here
-    console.log(formData);
   };
 
   return (
@@ -47,7 +45,6 @@ export default function ContactPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -108,7 +105,6 @@ export default function ContactPage() {
             </Card>
           </motion.div>
 
-          {/* Contact Information */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -156,10 +152,8 @@ export default function ContactPage() {
               </div>
             </Card>
 
-            {/* Map */}
             <Card className="p-8 bg-card dark:bg-zinc-800/50 border border-border/50">
               <div className="aspect-video rounded-lg overflow-hidden bg-muted">
-                {/* Add your map component here */}
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                   Map Placeholder
                 </div>

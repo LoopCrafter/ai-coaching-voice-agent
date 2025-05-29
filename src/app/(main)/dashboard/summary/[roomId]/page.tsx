@@ -9,7 +9,7 @@ const Summary = async ({ params }: { params: Promise<{ roomId: string }> }) => {
   const { roomId } = await params;
   const discussion = await getDiscussionById(roomId);
   return (
-    <div>
+    <div className="p-3 lg:p-10 ">
       <div className="flex justify-between items-end mb-6">
         <div className="flex justify-start items-center gap-4">
           <Image

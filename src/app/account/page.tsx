@@ -18,7 +18,6 @@ import { useForm } from "react-hook-form";
 
 const Profile = () => {
   const { user, isLoaded } = useUser();
-  console.log("user,", user);
   const form = useForm<ProfileType>({
     resolver: zodResolver(ProfileSchema),
     defaultValues: {
@@ -38,14 +37,13 @@ const Profile = () => {
         lastName: user?.lastName ?? "",
       });
     }
-  }, [isLoaded, user]);
+  }, [isLoaded, user, form]);
 
   const onSubmit = async (values: ProfileType) => {
     try {
-      const result = await updateUserProfile(values);
-      console.log("RESULTS", result);
+      await updateUserProfile(values);
     } catch (e) {
-      console.log("RESULTS", e);
+      console.log(e);
     }
   };
 

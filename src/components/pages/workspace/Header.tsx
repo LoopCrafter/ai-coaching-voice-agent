@@ -18,12 +18,12 @@ export const Header: FC<Header> = ({
   generateFeedback,
 }) => {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 w-full lg:w-auto">
       {enabledFeedback && (
         <Button
           disabled={loading}
           variant="outline"
-          className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 w-48"
+          className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 w-full mt-2 lg:mt-0 md:w-48"
           onClick={generateFeedback}
         >
           {loading ? (
@@ -36,7 +36,7 @@ export const Header: FC<Header> = ({
       <Button
         variant="outline"
         onClick={() => setShowChat(!showChat)}
-        className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+        className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 hidden lg:flex"
       >
         <MessageSquare className="w-4 h-4 mr-2" />
         {showChat ? "Hide Chat" : "Show Chat"}

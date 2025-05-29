@@ -139,8 +139,8 @@ export const UserInputDialog: FC<UserInputDialog> = ({
                             <h4
                               className={`text-center transition-all ${
                                 form.watch("expert") === expert.name
-                                  ? "text-blue-700"
-                                  : "text-gray-800"
+                                  ? "text-blue-700 dark:text-yellow-500"
+                                  : "text-gray-800 dark:text-white"
                               }`}
                             >
                               {expert.name}
@@ -152,7 +152,7 @@ export const UserInputDialog: FC<UserInputDialog> = ({
                     </FormItem>
                   )}
                 />
-                <DialogFooter>
+                <DialogFooter className="mt-3">
                   <Button
                     variant="ghost"
                     type="button"

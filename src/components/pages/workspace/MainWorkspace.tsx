@@ -17,14 +17,14 @@ import { toast } from "sonner";
 import ChatBox from "../discussionRoom/chatBox";
 import { CoachingExpert } from "@/utils/consts/Options";
 import { useDiscussion } from "@/hooks";
-import { User, useGeneralStore } from "@/stores/generalStore";
+import { useGeneralStore } from "@/stores/generalStore";
 import Markdown from "react-markdown";
 import Screening from "./screening";
 type MainWorkspace = {
   discussion: DiscussionRoomData;
   roomId: string;
 };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type FeedbackState = {
   feedbackResult: any;
   feedbackText?: string | null;
@@ -44,7 +44,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
   const updateUserTokenMethod = async (text: string) => {
     const tokenCount = text.trim() ? text.trim().length : 0;
     const currentCredit = Number(user?.credit) - Number(tokenCount);
-    const result = await updateUserToken({
+    await updateUserToken({
       id: user?._id as Id<"users">,
       credits: currentCredit,
     });
@@ -59,8 +59,10 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
   const [micStatus, setMicStatus] = useState<
     "idle" | "connecting" | "listening"
   >("idle");
-  const { audioUrl, coachingOption, conversations, setConversations } =
-    useDiscussion({ discussion, updateUserTokenMethod });
+  const { audioUrl, conversations, setConversations } = useDiscussion({
+    discussion,
+    updateUserTokenMethod,
+  });
 
   const updateSummary = useMutation(api.DiscussionRoom.updateSummary);
   const [state, generateFeedback, isPending] = useActionState<FeedbackState>(
@@ -84,7 +86,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
           feedbackText: feedbackResult.content,
         };
       } catch (err) {
-        debugger;
+        console.log("err", err);
         toast.error("Something went wrong!");
         return prevState;
       }
@@ -97,7 +99,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
 
   const expert = useMemo(() => {
     return CoachingExpert.find((el) => el.name === discussion?.expertName);
-  }, [discussion, CoachingExpert]);
+  }, [discussion, CoachingExpert, CoachingExpert]);
 
   const handleConnect = async () => {
     setMicStatus("connecting");
@@ -124,9 +126,6 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
     socket.onmessage = async (message) => {
       const data = JSON.parse(message.data);
       const transcript = data.channel?.alternatives[0]?.transcript;
-      if (transcript) {
-        console.log("Live Transcript:", transcript);
-      }
 
       if (transcript && data.is_final) {
         setConversations((prev) => [
@@ -144,9 +143,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
       console.error("Deepgram socket error:", error);
     };
 
-    socket.onclose = () => {
-      console.log("Deepgram connection closed");
-    };
+    socket.onclose = () => {};
   };
 
   const handleDisconnect = () => {
@@ -189,7 +186,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col gap-2 justify-start items-start lg:flex-row lg:justify-between lg:items-center mb-4">
         <h2 className="font-bold text-2xl dark:text-white">
           {discussion?.coachingOption}
         </h2>
@@ -202,7 +199,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
         />
       </div>
       <div
-        className={`mt-5 grid ${showChat ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-1"} gap-10 relative`}
+        className={`mt-5 grid ${showChat ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-1"} lg:gap-10 space-y-5 lg:space-y-0 relative`}
       >
         <Screening
           showChat={showChat}
