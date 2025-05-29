@@ -1,6 +1,5 @@
 "use client";
 
-import { currentUser } from "@clerk/nextjs/server";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { ReactNode } from "react";
 import AuthProvider from "./handler/AuthProvider";

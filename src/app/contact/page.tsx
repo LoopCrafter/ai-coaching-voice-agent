@@ -41,7 +41,8 @@ export default function ContactPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-xl text-muted-foreground"
           >
-            Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            Have questions? We would love to hear from you. Send us a message
+            and we will respond as soon as possible.
           </motion.p>
         </div>
 
@@ -60,7 +61,9 @@ export default function ContactPage() {
                       type="text"
                       placeholder="Your Name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       className="bg-background/50 dark:bg-zinc-900/50"
                     />
                   </div>
@@ -69,7 +72,9 @@ export default function ContactPage() {
                       type="email"
                       placeholder="Your Email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       className="bg-background/50 dark:bg-zinc-900/50"
                     />
                   </div>
@@ -78,7 +83,9 @@ export default function ContactPage() {
                       type="text"
                       placeholder="Subject"
                       value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, subject: e.target.value })
+                      }
                       className="bg-background/50 dark:bg-zinc-900/50"
                     />
                   </div>
@@ -86,7 +93,9 @@ export default function ContactPage() {
                     <Textarea
                       placeholder="Your Message"
                       value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, message: e.target.value })
+                      }
                       className="min-h-[150px] bg-background/50 dark:bg-zinc-900/50"
                     />
                   </div>
@@ -107,7 +116,9 @@ export default function ContactPage() {
             className="space-y-8"
           >
             <Card className="p-8 bg-card dark:bg-zinc-800/50 border border-border/50">
-              <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
+              <h2 className="text-2xl font-semibold mb-6">
+                Contact Information
+              </h2>
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -115,7 +126,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-medium mb-1">Email</h3>
-                    <p className="text-muted-foreground">support@voicecoach.ai</p>
+                    <p className="text-muted-foreground">
+                      support@voicecoach.ai
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -134,7 +147,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-medium mb-1">Location</h3>
                     <p className="text-muted-foreground">
-                      123 AI Street, Tech Valley<br />
+                      123 AI Street, Tech Valley
+                      <br />
                       San Francisco, CA 94107
                     </p>
                   </div>

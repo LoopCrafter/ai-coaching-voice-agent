@@ -1,5 +1,4 @@
 "use client";
-import { AvatarUploader } from "@/components/pages";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -42,19 +41,6 @@ const Profile = () => {
   }, [isLoaded, user]);
 
   const onSubmit = async (values: ProfileType) => {
-    let avatarUrl = null;
-    if (values.avatar) {
-      const formData = new FormData();
-      formData.append("file", values.avatar);
-
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/upload`, {
-        method: "POST",
-        body: formData,
-      });
-
-      const json = await res.json();
-      avatarUrl = json.url;
-    }
     try {
       const result = await updateUserProfile(values);
       console.log("RESULTS", result);
@@ -73,25 +59,6 @@ const Profile = () => {
     <div className="container max-w-lg mx-auto pt-30 pb-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div>
-            <FormField
-              control={form.control}
-              name="avatar"
-              render={({ field }) => (
-                <FormItem className="mt-4">
-                  <FormLabel>Avatar</FormLabel>
-                  <FormControl>
-                    {/* <AvatarUploader
-                      currentAvatarUrl={user?.imageUrl}
-                      value={field.value}
-                      onFileChange={field.onChange}
-                    /> */}
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
           <FormField
             control={form.control}
             name="firstName"
@@ -121,8 +88,9 @@ const Profile = () => {
           <FormField
             control={form.control}
             name="email"
+            disabled
             render={({ field }) => (
-              <FormItem className="mt-4">
+              <FormItem className="mt-4 select-none">
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input placeholder="Email" {...field} />

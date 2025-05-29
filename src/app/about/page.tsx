@@ -2,32 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Users, Target, Award, Globe } from "lucide-react";
-import Image from "next/image";
-
-const stats = [
-  {
-    icon: <Users className="w-6 h-6" />,
-    value: "10K+",
-    label: "Active Users",
-  },
-  {
-    icon: <Target className="w-6 h-6" />,
-    value: "95%",
-    label: "Success Rate",
-  },
-  {
-    icon: <Award className="w-6 h-6" />,
-    value: "50+",
-    label: "Countries",
-  },
-  {
-    icon: <Globe className="w-6 h-6" />,
-    value: "24/7",
-    label: "Support",
-  },
-];
 
 const team = [
   {
@@ -104,14 +79,14 @@ export default function AboutPage() {
           >
             <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
             <p className="text-lg text-muted-foreground mb-6">
-              At VoiceCoach AI, we're on a mission to revolutionize how people communicate. 
-              We believe that effective communication is the key to success in both personal 
-              and professional life.
+              At VoiceCoach AI, we&apos;re on a mission to revolutionize how
+              people communicate. We believe that effective communication is the
+              key to success in both personal and professional life.
             </p>
             <p className="text-lg text-muted-foreground">
-              Our AI-powered platform provides personalized coaching to help you develop 
-              your voice and communication skills, making you more confident and effective 
-              in every conversation.
+              Our AI-powered platform provides personalized coaching to help you
+              develop your voice and communication skills, making you more
+              confident and effective in every conversation.
             </p>
           </motion.div>
           <motion.div
@@ -160,7 +135,6 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-
       </div>
     </div>
   );

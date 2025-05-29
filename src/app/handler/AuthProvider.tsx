@@ -6,7 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import { useGeneralStore } from "@/stores/generalStore";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user } = useUser();
   const setUser = useGeneralStore((state) => state.setUser);
   const createUser = useMutation(api.users.CreateUser);
   useEffect(() => {

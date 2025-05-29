@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { getDiscussionHistoryServer } from "@/lib/convexServer";
-import { CoachingOptions } from "@/utils/consts/Options";
 import { clerkClient as getClerkClient, auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -32,7 +31,9 @@ export default async function Feedback() {
     <div>
       <h2 className="text-lg font-bold">Feedback: </h2>
       {history.length === 0 ? (
-        <h2 className="text-gray-400">You don't have any previous feedback </h2>
+        <h2 className="text-gray-400">
+          You don&apos;t have any previous feedback{" "}
+        </h2>
       ) : (
         <div className="mt-5">
           {history

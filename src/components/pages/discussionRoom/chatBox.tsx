@@ -1,15 +1,7 @@
 "use client";
-import { Conversation } from "@/app/(main)/discussion-room/[roomId]/page";
-import { Button } from "@/components/ui/button";
-import { GenerateFeedbackAndNotes } from "@/service/GlobalServices";
-import { Coach } from "@/utils/consts/Options";
-import { useMutation } from "convex/react";
-import { Loader2Icon } from "lucide-react";
-import React, { FC, useEffect, useState } from "react";
-import { api } from "../../../../convex/_generated/api";
-import { useParams } from "next/navigation";
-import { Id } from "../../../../convex/_generated/dataModel";
-import { toast } from "sonner";
+
+import React, { FC } from "react";
+import { Conversation } from "@/types";
 
 type Chat = {
   conversations: Conversation[];
@@ -17,20 +9,7 @@ type Chat = {
   coachingOption?: string;
 };
 
-const ChatBox: FC<Chat> = ({
-  conversations,
-  enableFeedback,
-  coachingOption = "",
-}) => {
-  const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState("");
-  const { roomId } = useParams();
-  const updateSummary = useMutation(api.DiscussionRoom.updateSummary);
-  useEffect(() => {
-    if (enableFeedback) {
-    }
-  }, []);
-
+const ChatBox: FC<Chat> = ({ conversations }) => {
   return (
     <>
       <div className="bg-secondary dark:bg-gray-800 h-[60vh] rounded-4xl items-center justify-center border dark:border-gray-700 flex flex-col relative">
