@@ -20,7 +20,7 @@ declare module "recordrtc" {
   }
 
   namespace RecordRTC {
-    var StereoAudioRecorder: any;
+    let StereoAudioRecorder: any;
   }
 
   export = RecordRTC;
