@@ -202,7 +202,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
         />
       </div>
       <div
-        className={`mt-5 grid ${showChat ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-2"} gap-10 relative`}
+        className={`mt-5 grid ${showChat ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-1"} gap-10 relative`}
       >
         <Screening
           showChat={showChat}
