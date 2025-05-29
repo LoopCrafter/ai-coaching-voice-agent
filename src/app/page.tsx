@@ -1,4 +1,3 @@
-import { Footer, Navbar } from "@/components/layout";
 import {
   FeaturesSection,
   HeroSection,
@@ -6,7 +5,6 @@ import {
   TestimonialsSection,
   PricingSection,
   FaqSection,
-  CtaSection,
 } from "@/components/sections";
 
 export default function Home() {

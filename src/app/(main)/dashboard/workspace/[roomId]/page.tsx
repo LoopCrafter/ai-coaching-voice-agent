@@ -13,6 +13,7 @@ const Workspace = async ({
   try {
     discussion = await getDiscussionById(roomId);
   } catch (e) {
+    console.log(e);
     throw redirect("/dashboard");
   }
 
