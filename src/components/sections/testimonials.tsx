@@ -104,7 +104,7 @@ export function TestimonialsSection() {
                     {renderStars(testimonial.rating)}
                   </div>
                   <p className="mb-6 text-muted-foreground">
-                    "{testimonial.content}"
+                    &quot;{testimonial.content}&quot;
                   </p>
                   <div className="flex items-center">
                     <div className="relative w-10 h-10 rounded-full overflow-hidden mr-4">
