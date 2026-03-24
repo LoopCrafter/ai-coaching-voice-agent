@@ -17,15 +17,15 @@ const openai = new OpenAI({
 export const AIModel = async (
   topic: string,
   CoachingOption: Coach | null,
-  lastTwoMsg: Conversation[]
+  lastTwoMsg: Conversation[],
 ) => {
   const option = CoachingOptions.find(
-    (coach) => coach.name === CoachingOption?.name
+    (coach) => coach.name === CoachingOption?.name,
   );
 
   const prompt = option?.prompt.replace("{user_topic}", topic);
   const completion = await openai.chat.completions.create({
-    model: "meta-llama/llama-3.3-8b-instruct:free",
+    model: "nvidia/nemotron-3-super-120b-a12b:free",
     messages: [{ role: "assistant", content: prompt }, ...lastTwoMsg],
   });
   return completion.choices[0].message;
@@ -33,13 +33,13 @@ export const AIModel = async (
 
 export const GenerateFeedbackAndNotes = async (
   CoachingOption: string,
-  conversation: Conversation[]
+  conversation: Conversation[],
 ) => {
   const option = CoachingOptions.find((coach) => coach.name === CoachingOption);
 
   const prompt = option?.summeryPrompt;
   const completion = await openai.chat.completions.create({
-    model: "meta-llama/llama-3.3-8b-instruct:free",
+    model: "nvidia/nemotron-3-super-120b-a12b:free",
     messages: [...conversation, { role: "assistant", content: prompt }],
   });
   return completion.choices[0].message;
@@ -47,7 +47,7 @@ export const GenerateFeedbackAndNotes = async (
 
 export const convertTextToSpeech = async (
   text: string,
-  expertName: ExpertName
+  expertName: ExpertName,
 ) => {
   const pollyClient = new PollyClient({
     region: "eu-north-1",
@@ -64,8 +64,15 @@ export const convertTextToSpeech = async (
   });
   try {
     const { AudioStream } = await pollyClient.send(command);
-    const audioArrayBuffer = await AudioStream?.transformToByteArray()!;
-    const audioBlob = new Blob([audioArrayBuffer], { type: "mp3" });
+
+    if (!AudioStream) {
+      throw new Error("AudioStream is undefined");
+    }
+
+    const audioBytes = await AudioStream.transformToByteArray();
+    const safeBytes = new Uint8Array(audioBytes);
+    const audioBlob = new Blob([safeBytes], { type: "audio/mpeg" });
+
     const audioUrl = URL.createObjectURL(audioBlob);
     return audioUrl;
   } catch (e) {
