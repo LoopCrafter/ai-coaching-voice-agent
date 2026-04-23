@@ -88,10 +88,11 @@ export function HeroSection() {
                         <div
                           key={i}
                           className="w-1 bg-primary/60 rounded-full"
-                          style={{
-                            height: `${Math.sin(i * 0.2) * 50 + 20}%`,
-                            //animation: `pulse 1.5s ease-in-out infinite ${i * 0.05}s`,
-                          }}
+                          style={{ height: "20%" }}
+                          // style={{
+                          //   // height: `${Math.sin(i * 0.2) * 50 + 20}%`,
+                          //   //animation: `pulse 1.5s ease-in-out infinite ${i * 0.05}s`,
+                          // }}
                         />
                       ))}
                     </div>
