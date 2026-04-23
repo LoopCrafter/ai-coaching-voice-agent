@@ -2,7 +2,7 @@
 
 import { ProfileSchema, ProfileType } from "@/utils/zodSchemas";
 import { auth } from "@clerk/nextjs/server";
-import { clerkClient } from "@clerk/clerk-sdk-node";
+import { clerkClient } from "@clerk/express";
 
 export const updateUserProfile = async (values: ProfileType) => {
   const { userId } = await auth();
