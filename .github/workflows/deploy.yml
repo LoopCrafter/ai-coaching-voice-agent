@@ -21,7 +21,23 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t ${{ secrets.DOCKER_USER }}/voicecoachai:latest .
+          docker build \
+            --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}" \
+            --build-arg CLERK_SECRET_KEY="${{ secrets.CLERK_SECRET_KEY }}" \
+            --build-arg NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in" \
+            --build-arg NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up" \
+            --build-arg NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/dashboard" \
+            --build-arg NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/dashboard" \
+            --build-arg CONVEX_DEPLOYMENT="${{ secrets.CONVEX_DEPLOYMENT }}" \
+            --build-arg NEXT_PUBLIC_CONVEX_URL="${{ secrets.NEXT_PUBLIC_CONVEX_URL }}" \
+            --build-arg NEXT_PUBLIC_BASE_URL="${{ secrets.NEXT_PUBLIC_BASE_URL }}" \
+            --build-arg NEXT_PUBLIC_CONVEX_DEPLOYMENT_TOKEN="${{ secrets.NEXT_PUBLIC_CONVEX_DEPLOYMENT_TOKEN }}" \
+            --build-arg NEXT_PUBLIC_DEEPGRAM_API_KEY="${{ secrets.NEXT_PUBLIC_DEEPGRAM_API_KEY }}" \
+            --build-arg NEXT_PUBLIC_OPEN_ROUTER_API_KEY="${{ secrets.NEXT_PUBLIC_OPEN_ROUTER_API_KEY }}" \
+            --build-arg NEXT_PUBLIC_AWS_ACCESS_KEY="${{ secrets.NEXT_PUBLIC_AWS_ACCESS_KEY }}" \
+            --build-arg NEXT_PUBLIC_AWS_SECRET_ACCESS_TOKEN="${{ secrets.NEXT_PUBLIC_AWS_SECRET_ACCESS_TOKEN }}" \
+            --build-arg NEXT_PUBLIC_ARGJECT_KEY="${{ secrets.NEXT_PUBLIC_ARGJECT_KEY }}" \
+            -t ${{ secrets.DOCKER_USER }}/voicecoachai:latest .
 
       - name: Push image
         run: |
