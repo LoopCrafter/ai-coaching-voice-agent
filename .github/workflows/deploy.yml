@@ -60,6 +60,6 @@ jobs:
             docker stop voicecoachai || true
             docker rm voicecoachai || true
 
-            cd /root/app
+            cd /root/apps/voicecoachai
 
             docker compose up -d
