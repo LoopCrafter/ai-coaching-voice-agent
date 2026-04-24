@@ -19,7 +19,8 @@ ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY \
     NODE_ENV=production
 
 COPY package.json package-lock.json* ./
-RUN npm install --loglevel info --legacy-peer-deps
+# RUN npm install --loglevel info
+RUN npm ci --include=dev
 
 COPY . .
 
