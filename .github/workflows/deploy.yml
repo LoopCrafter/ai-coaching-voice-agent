@@ -17,8 +17,16 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            source ~/.bashrc
+            source ~/.profile
+            export PATH=$PATH:/usr/local/bin:/home/ubuntu/.nvm/versions/node/*/bin
+
             cd /var/www/voicecoachai
+            git reset --hard
+            git clean -fd
             git pull origin main
+
             npm install
             npm run build
+
             pm2 restart voicecoachai
