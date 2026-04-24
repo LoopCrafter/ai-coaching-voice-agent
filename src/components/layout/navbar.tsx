@@ -34,7 +34,7 @@ export function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <Headphones className="w-6 h-6 text-primary" />
-              <span className="text-xl font-bold">VoiceCoach AI</span>
+              <span className="text-xl font-bold">SpeakifyAI</span>
             </Link>
           </div>
 
