@@ -1,4 +1,4 @@
-name: Deploy to Server
+name: Build & Deploy Docker
 
 on:
   push:
@@ -6,27 +6,44 @@ on:
       - main
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Build image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USER }}/voicecoachai:latest .
+
+      - name: Push image
+        run: |
+          docker push ${{ secrets.DOCKER_USER }}/voicecoachai:latest
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 91.107.243.209
+          host: ${{ secrets.HOST }}
           username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
-            source ~/.bashrc
-            source ~/.profile
-            export PATH=$PATH:/usr/local/bin:/home/ubuntu/.nvm/versions/node/*/bin
+            docker pull ${{ secrets.DOCKER_USER }}/voicecoachai:latest
 
-            cd /var/www/voicecoachai
-            git reset --hard
-            git clean -fd
-            git pull origin main
+            docker stop voicecoachai || true
+            docker rm voicecoachai || true
 
-            npm install
-            npm run build
+            cd /root/app
 
-            pm2 restart voicecoachai
+            docker compose up -d
