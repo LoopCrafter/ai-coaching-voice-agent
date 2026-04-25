@@ -66,7 +66,12 @@ export function Navbar() {
           </nav>
           <div className="flex items-center">
             <ModeToggle />
-            <SignedIn>{user && <UserProfile user={user} />}</SignedIn>
+            <SignedIn>
+              <div className="flex items-center gap-4">
+                <Link href="/dashboard">Dashboard</Link>
+                {user && <UserProfile user={user} />}
+              </div>
+            </SignedIn>
             <SignedOut>
               <Button
                 onClick={() => router.push("/sign-in")}
