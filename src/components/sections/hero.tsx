@@ -82,7 +82,7 @@ export function HeroSection() {
               >
                 <div className="aspect-[4/3] relative overflow-hidden bg-muted p-6 flex items-center justify-center">
                   {/* Animated voice waveform */}
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center opacity-60">
                     <div className="flex items-end gap-[3px] h-32 w-64">
                       {[...Array(40)].map((_, i) => (
                         <div
