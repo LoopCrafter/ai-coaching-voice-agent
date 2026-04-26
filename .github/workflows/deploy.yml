@@ -37,11 +37,11 @@ jobs:
             --build-arg NEXT_PUBLIC_AWS_ACCESS_KEY="${{ secrets.NEXT_PUBLIC_AWS_ACCESS_KEY }}" \
             --build-arg NEXT_PUBLIC_AWS_SECRET_ACCESS_TOKEN="${{ secrets.NEXT_PUBLIC_AWS_SECRET_ACCESS_TOKEN }}" \
             --build-arg NEXT_PUBLIC_ARGJECT_KEY="${{ secrets.NEXT_PUBLIC_ARGJECT_KEY }}" \
-            -t ${{ secrets.DOCKER_USER }}/voicecoachai:latest .
+            -t ${{ secrets.DOCKER_USER }}/speakifyai:latest .
 
       - name: Push image
         run: |
-          docker push ${{ secrets.DOCKER_USER }}/voicecoachai:latest
+          docker push ${{ secrets.DOCKER_USER }}/speakifyai:latest
 
   deploy:
     needs: build
@@ -55,11 +55,11 @@ jobs:
           username: root
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_USER }}/voicecoachai:latest
+            docker pull ${{ secrets.DOCKER_USER }}/speakifyai:latest
 
-            docker stop voicecoachai || true
-            docker rm voicecoachai || true
+            docker stop speakifyai || true
+            docker rm speakifyai || true
 
-            cd /root/apps/voicecoachai
+            cd /root/apps/speakifyai
 
             docker compose up -d
