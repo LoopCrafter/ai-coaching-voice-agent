@@ -6,6 +6,8 @@ import { getFormattedTime } from "@/lib/getFormattedTime";
 import { useGeneralStore } from "@/stores/generalStore";
 import Image from "next/image";
 import ChatHistory from "../../_components/ChatHistory";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 
 const Summary = async ({ params }: { params: Promise<{ roomId: string }> }) => {
   const { roomId } = await params;
@@ -29,9 +31,17 @@ const Summary = async ({ params }: { params: Promise<{ roomId: string }> }) => {
             </h3>
           </div>
         </div>
-        <h4 className="text-gray-400 text-xs">
-          {getFormattedTime(+(discussion?._creationTime ?? ""))}
-        </h4>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/dashboard/workspace/${discussion?._id}`}
+            className={buttonVariants()}
+          >
+            Back to Discussion
+          </Link>
+          <h4 className="text-gray-400 text-xs">
+            {getFormattedTime(+(discussion?._creationTime ?? ""))}
+          </h4>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">

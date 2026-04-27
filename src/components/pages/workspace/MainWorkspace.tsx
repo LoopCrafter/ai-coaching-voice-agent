@@ -229,7 +229,9 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
           <h3 className="font-medium mb-2 text-gray-900 dark:text-gray-100">
             Feedback & Notes
           </h3>
-          <Markdown>{state.feedbackText}</Markdown>
+          <div className="preview">
+            <Markdown>{state.feedbackText}</Markdown>
+          </div>
         </div>
       )}
       {!!audioUrl && (

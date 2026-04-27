@@ -39,7 +39,9 @@ const Summarybox: FC<Props> = ({ summary, discussion }) => {
           </Button>
         </div>
       ) : (
-        <Markdown>{summary}</Markdown>
+        <div className="preview">
+          <Markdown>{summary}</Markdown>
+        </div>
       )}
     </div>
   );

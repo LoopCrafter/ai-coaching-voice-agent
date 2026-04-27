@@ -36,23 +36,27 @@ const ChatBox: FC<Chat> = ({
                     <h2 className="p-1 px-2 bg-gray-200 dark:bg-gray-700 mt-1 rounded-md dark:text-white">
                       {conversation.content}
                     </h2>
-                    <Image
-                      src={userAvatar}
-                      alt="Profile"
-                      width={34}
-                      height={34}
-                      className="rounded-full"
-                    />
+                    {userAvatar ? (
+                      <Image
+                        src={userAvatar}
+                        alt="Profile"
+                        width={34}
+                        height={34}
+                        className="rounded-full"
+                      />
+                    ) : null}
                   </>
                 ) : (
                   <>
-                    <Image
-                      src={experAvatar}
-                      alt={expert?.name ?? ""}
-                      width={34}
-                      height={34}
-                      className={`w-[34px] h-[34px] rounded-full object-cover`}
-                    />
+                    {experAvatar ? (
+                      <Image
+                        src={experAvatar}
+                        alt={expert?.name ?? ""}
+                        width={34}
+                        height={34}
+                        className={`w-[34px] h-[34px] rounded-full object-cover`}
+                      />
+                    ) : null}
                     <h2 className="p-1 px-2 bg-primary dark:bg-blue-600 mt-1 text-white rounded-md inline-block">
                       {conversation.content}
                     </h2>
