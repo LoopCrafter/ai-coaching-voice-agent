@@ -25,7 +25,7 @@ type MainWorkspace = {
   roomId: string;
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type FeedbackState = {
+export type FeedbackState = {
   feedbackResult: any;
   feedbackText?: string | null;
 };

@@ -36,7 +36,7 @@ const Summary = async ({ params }: { params: Promise<{ roomId: string }> }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
         <div className="col-span-3">
-          <Summarybox summary={discussion?.summary} />
+          <Summarybox discussion={discussion} summary={discussion?.summary} />
         </div>
         <div className="col-span-2">
           {!!discussion?.conversation?.length && (

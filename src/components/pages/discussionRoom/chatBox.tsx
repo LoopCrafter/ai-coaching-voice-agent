@@ -11,7 +11,7 @@ type Chat = {
   coachingOption?: string;
   computing?: boolean;
   expert?: Expert;
-  userAvatar?: string;
+  userAvatar: string;
 };
 
 const ChatBox: FC<Chat> = ({
@@ -20,6 +20,7 @@ const ChatBox: FC<Chat> = ({
   expert,
   userAvatar,
 }) => {
+  const experAvatar = expert?.avatar || "";
   return (
     <>
       <div className="bg-secondary dark:bg-gray-800 h-[40vh] lg:h-[60vh] rounded-4xl items-center justify-center border dark:border-gray-700 flex flex-col relative">
@@ -36,7 +37,7 @@ const ChatBox: FC<Chat> = ({
                       {conversation.content}
                     </h2>
                     <Image
-                      src={userAvatar ?? ""}
+                      src={userAvatar}
                       alt="Profile"
                       width={34}
                       height={34}
@@ -46,7 +47,7 @@ const ChatBox: FC<Chat> = ({
                 ) : (
                   <>
                     <Image
-                      src={expert?.avatar ?? ""}
+                      src={experAvatar}
                       alt={expert?.name ?? ""}
                       width={34}
                       height={34}
