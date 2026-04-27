@@ -1,7 +1,6 @@
 import { MainWorkspace } from "@/components/pages/workspace";
 import { getDiscussionById } from "@/lib/discussions";
 import { redirect } from "next/navigation";
-import React from "react";
 
 const Workspace = async ({
   params,

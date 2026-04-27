@@ -20,7 +20,7 @@ export default async function History() {
   if (!email) return <div>Email not found</div>;
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/user?email=${encodeURIComponent(email)}`
+    `${process.env.NEXT_PUBLIC_BASE_URL}/user?email=${encodeURIComponent(email)}`,
   );
   const userData = await res.json();
 
@@ -39,8 +39,9 @@ export default async function History() {
           {history
             .filter(
               (el) =>
-                el.coachingOption !== "Topic Base Lecture" &&
-                el.coachingOption !== "Learn Language"
+                // el.coachingOption !== "Topic Base Lecture" &&
+                // el.coachingOption !== "Learn Language"
+                !el.summary,
             )
             .map((item) => (
               <div key={item._id}>

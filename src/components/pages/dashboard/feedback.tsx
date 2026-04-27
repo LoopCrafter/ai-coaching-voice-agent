@@ -20,12 +20,18 @@ export default async function Feedback() {
   if (!email) return <div>Email not found</div>;
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/user?email=${encodeURIComponent(email)}`
+    `${process.env.NEXT_PUBLIC_BASE_URL}/user?email=${encodeURIComponent(email)}`,
   );
   const userData = await res.json();
 
   if (!userData?._id) return <div>User not found</div>;
   const history = await getDiscussionHistoryServer(userData._id);
+  const filteredHistory = history.filter(
+    (el) =>
+      // el.coachingOption === "Topic Base Lecture" ||
+      // el.coachingOption === "Learn Language"
+      el.summary,
+  );
 
   return (
     <div>
@@ -36,47 +42,41 @@ export default async function Feedback() {
         </h2>
       ) : (
         <div className="mt-5">
-          {history
-            .filter(
-              (el) =>
-                el.coachingOption === "Topic Base Lecture" ||
-                el.coachingOption === "Learn Language"
-            )
-            .map((item) => (
-              <div key={item._id} className="">
-                <Link
-                  href={`/dashboard/summary/${item._id}`}
-                  className="flex justify-between items-center border-b-2 pb-3 mb-3 group"
-                >
-                  <div className="flex justify-start items-center gap-3 ">
-                    <Image
-                      src={getAbstractImage(item.coachingOption)}
-                      alt={item.coachingOption}
-                      width={100}
-                      height={100}
-                      className="w-[50px] h-[50px] rounded-full object-cover"
-                    />
-                    <div>
-                      <h3 className="font-bold">{item.topic}</h3>
-                      <h4 className="text-gray-400 text-md">
-                        {item.coachingOption}
-                      </h4>
-                      <h4 className="text-gray-400 text-xs">
-                        {getFormattedTime(item._creationTime)}
-                      </h4>
-                    </div>
+          {filteredHistory.map((item) => (
+            <div key={item._id} className="">
+              <Link
+                href={`/dashboard/summary/${item._id}`}
+                className="flex justify-between items-center border-b-2 pb-3 mb-3 group"
+              >
+                <div className="flex justify-start items-center gap-3 ">
+                  <Image
+                    src={getAbstractImage(item.coachingOption)}
+                    alt={item.coachingOption}
+                    width={100}
+                    height={100}
+                    className="w-[50px] h-[50px] rounded-full object-cover"
+                  />
+                  <div>
+                    <h3 className="font-bold">{item.topic}</h3>
+                    <h4 className="text-gray-400 text-md">
+                      {item.coachingOption}
+                    </h4>
+                    <h4 className="text-gray-400 text-xs">
+                      {getFormattedTime(item._creationTime)}
+                    </h4>
                   </div>
+                </div>
 
-                  <Button
-                    variant={"outline"}
-                    className=" opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200"
-                  >
-                    {" "}
-                    View Feedback
-                  </Button>
-                </Link>
-              </div>
-            ))}
+                <Button
+                  variant={"outline"}
+                  className=" opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200"
+                >
+                  {" "}
+                  View Feedback
+                </Button>
+              </Link>
+            </div>
+          ))}
         </div>
       )}
     </div>

@@ -19,7 +19,6 @@ type Props = {
 };
 export const UserProfileDialog: FC<Props> = ({ children }) => {
   const user = useGeneralStore((state) => state.user);
-  console.log(user);
   const mainTokens = user?.subscriptionId ? 50000 : 500;
   return (
     <Dialog>

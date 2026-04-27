@@ -67,7 +67,7 @@ export function Navbar() {
           <div className="flex items-center">
             <ModeToggle />
             <SignedIn>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 ml-3">
                 <Link href="/dashboard">Dashboard</Link>
                 {user && <UserProfile user={user} />}
               </div>
