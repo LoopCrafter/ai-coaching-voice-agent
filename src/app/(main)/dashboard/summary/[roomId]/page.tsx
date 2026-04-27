@@ -3,10 +3,13 @@ import Summarybox from "@/components/pages/summary/Summarybox";
 import { getDiscussionById } from "@/lib/discussions";
 import { getAbstractImage } from "@/lib/getAbstractImage";
 import { getFormattedTime } from "@/lib/getFormattedTime";
+import { useGeneralStore } from "@/stores/generalStore";
 import Image from "next/image";
+import ChatHistory from "../../_components/ChatHistory";
 
 const Summary = async ({ params }: { params: Promise<{ roomId: string }> }) => {
   const { roomId } = await params;
+
   const discussion = await getDiscussionById(roomId);
   return (
     <div className="p-3 lg:p-10 ">
@@ -37,10 +40,7 @@ const Summary = async ({ params }: { params: Promise<{ roomId: string }> }) => {
         </div>
         <div className="col-span-2">
           {!!discussion?.conversation?.length && (
-            <ChatBox
-              conversations={discussion?.conversation}
-              enableFeedback={false}
-            />
+            <ChatHistory discussion={discussion} />
           )}
         </div>
       </div>

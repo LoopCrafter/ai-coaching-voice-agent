@@ -59,10 +59,11 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
   const [micStatus, setMicStatus] = useState<
     "idle" | "connecting" | "listening"
   >("idle");
-  const { audioUrl, conversations, setConversations } = useDiscussion({
-    discussion,
-    updateUserTokenMethod,
-  });
+  const { audioUrl, conversations, setConversations, computing } =
+    useDiscussion({
+      discussion,
+      updateUserTokenMethod,
+    });
 
   const updateSummary = useMutation(api.DiscussionRoom.updateSummary);
   const [state, generateFeedback, isPending] = useActionState<FeedbackState>(
@@ -70,7 +71,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
       try {
         const feedbackResult = await GenerateFeedbackAndNotes(
           discussion?.coachingOption ?? "",
-          conversations
+          conversations,
         );
 
         await updateSummary({
@@ -94,7 +95,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
     {
       feedbackResult: null,
       feedbackText: "",
-    }
+    },
   );
 
   const expert = useMemo(() => {
@@ -216,6 +217,9 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
               conversations={conversations}
               enableFeedback={enabledFeedback}
               coachingOption={discussion?.coachingOption}
+              computing={computing}
+              expert={expert}
+              userAvatar={user ? user.avatar : ""}
             />
           </div>
         )}

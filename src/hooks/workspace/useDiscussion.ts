@@ -10,6 +10,7 @@ type Props = {
 
 export const useDiscussion = ({ discussion, updateUserTokenMethod }: Props) => {
   const [audioUrl, setAudioUrl] = useState<string | undefined>();
+  const [computing, setComputing] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [coachingOption, setCoachingOption] = useState<Coach | null>(null);
 
@@ -17,7 +18,7 @@ export const useDiscussion = ({ discussion, updateUserTokenMethod }: Props) => {
     if (!discussion) return;
 
     const coachingItem = CoachingOptions.find(
-      (option) => option.name === discussion.coachingOption
+      (option) => option.name === discussion.coachingOption,
     );
     if (coachingItem) {
       setCoachingOption(coachingItem);
@@ -31,22 +32,35 @@ export const useDiscussion = ({ discussion, updateUserTokenMethod }: Props) => {
     async function fetchData() {
       if (conversations[conversations?.length - 1]?.role === "user") {
         const lastTwoMessage = conversations.slice(-2);
-        const AIanswer = (await AIModel(
-          discussion?.topic ?? "",
-          coachingOption,
-          lastTwoMessage
-        )) as Conversation;
-        const url = await convertTextToSpeech(
-          AIanswer.content,
-          discussion?.expertName
-        );
-        setAudioUrl(url);
-        setConversations((prev: Conversation[]) => [...prev, AIanswer]);
-        await updateUserTokenMethod(AIanswer.content);
+        setComputing(true);
+        try {
+          const AIanswer = (await AIModel(
+            discussion?.topic ?? "",
+            coachingOption,
+            lastTwoMessage,
+          )) as Conversation;
+          const url = await convertTextToSpeech(
+            AIanswer.content,
+            discussion?.expertName,
+          );
+          setAudioUrl(url);
+          setConversations((prev: Conversation[]) => [...prev, AIanswer]);
+          await updateUserTokenMethod(AIanswer.content);
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setComputing(false);
+        }
       }
     }
     fetchData();
   }, [conversations, coachingOption]);
 
-  return { audioUrl, conversations, coachingOption, setConversations };
+  return {
+    audioUrl,
+    conversations,
+    coachingOption,
+    setConversations,
+    computing,
+  };
 };
