@@ -1,5 +1,9 @@
+import { Metadata } from "next";
 import { ReactNode } from "react";
 
+export const metadata: Metadata = {
+  title: "Speakify | Dashboard",
+};
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div>
