@@ -1,19 +1,39 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { DiscussionRoomData } from "@/types";
+import { useMutation } from "convex/react";
 import { Loader2Icon } from "lucide-react";
-import React, { FC, startTransition, useState } from "react";
+import { FC, useTransition } from "react";
 import Markdown from "react-markdown";
+import { api } from "../../../../convex/_generated/api";
+import { GenerateFeedbackAndNotes } from "@/service/GlobalServices";
+import { Id } from "../../../../convex/_generated/dataModel";
+import { useRouter } from "next/navigation";
 type Props = {
   summary?: string;
   discussion: DiscussionRoomData;
 };
 const Summarybox: FC<Props> = ({ summary, discussion }) => {
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const updateSummary = useMutation(api.DiscussionRoom.updateSummary);
+  const router = useRouter();
 
   const handleClickGenerateFeedback = () => {
-    startTransition(() => {
-      // generateFeedback();
+    startTransition(async () => {
+      try {
+        const feedbackResult = await GenerateFeedbackAndNotes(
+          discussion?.coachingOption ?? "",
+          discussion?.conversation ?? [],
+        );
+
+        await updateSummary({
+          id: discussion?._id as Id<"DiscussionRoom">,
+          feedback: feedbackResult.content,
+        });
+        router.refresh();
+      } catch (error) {
+        console.log(error);
+      }
     });
   };
   return (
@@ -26,12 +46,12 @@ const Summarybox: FC<Props> = ({ summary, discussion }) => {
             conversation.
           </p>
           <Button
-            disabled={loading}
+            disabled={isPending}
             variant="outline"
             className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 w-full md:w-48 my-10"
             onClick={handleClickGenerateFeedback}
           >
-            {loading ? (
+            {isPending ? (
               <Loader2Icon className="animate-spin" />
             ) : (
               "Generate Feedback"

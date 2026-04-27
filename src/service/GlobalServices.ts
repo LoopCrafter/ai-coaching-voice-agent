@@ -38,6 +38,7 @@ export const GenerateFeedbackAndNotes = async (
   const option = CoachingOptions.find((coach) => coach.name === CoachingOption);
 
   const prompt = option?.summeryPrompt;
+  debugger;
   const completion = await openai.chat.completions.create({
     model: "nvidia/nemotron-3-super-120b-a12b:free",
     messages: [...conversation, { role: "assistant", content: prompt }],
