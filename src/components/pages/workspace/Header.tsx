@@ -36,7 +36,7 @@ export const Header: FC<Header> = ({
       <Button
         variant="outline"
         onClick={() => setShowChat(!showChat)}
-        className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 hidden lg:flex"
+        className="dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700  flex"
       >
         <MessageSquare className="w-4 h-4 mr-2" />
         {showChat ? "Hide Chat" : "Show Chat"}

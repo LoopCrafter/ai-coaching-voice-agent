@@ -1,7 +1,10 @@
 import { AIModel, convertTextToSpeech } from "@/service/GlobalServices";
 import { Conversation, DiscussionRoomData } from "@/types";
 import { Coach, CoachingOptions } from "@/utils/consts/Options";
+import { useMutation } from "convex/react";
 import { useEffect, useState } from "react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 type Props = {
   discussion: DiscussionRoomData;
@@ -13,6 +16,7 @@ export const useDiscussion = ({ discussion, updateUserTokenMethod }: Props) => {
   const [computing, setComputing] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [coachingOption, setCoachingOption] = useState<Coach | null>(null);
+  const updateConversation = useMutation(api.DiscussionRoom.updateConversation);
 
   useEffect(() => {
     if (!discussion) return;
@@ -44,6 +48,10 @@ export const useDiscussion = ({ discussion, updateUserTokenMethod }: Props) => {
             discussion?.expertName,
           );
           setAudioUrl(url);
+          await updateConversation({
+            id: discussion?._id as Id<"DiscussionRoom">,
+            conversation: [...conversations, AIanswer],
+          });
           setConversations((prev: Conversation[]) => [...prev, AIanswer]);
           await updateUserTokenMethod(AIanswer.content);
         } catch (error) {

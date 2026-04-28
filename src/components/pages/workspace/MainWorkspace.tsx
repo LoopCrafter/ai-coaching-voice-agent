@@ -36,6 +36,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const updateUserToken = useMutation(api.users.updateUserToken);
   const user = useGeneralStore((state) => state.user);
+
   const setUser = useGeneralStore((state) => state.setUser);
 
   const [showChat, setShowChat] = useState(false);
@@ -136,6 +137,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
             content: transcript,
           },
         ]);
+
         await updateUserTokenMethod(transcript.trim());
       }
     };
@@ -149,6 +151,7 @@ export const MainWorkspace: FC<MainWorkspace> = ({ discussion, roomId }) => {
 
   const handleDisconnect = () => {
     setEnabledFeedback(true);
+
     // Stop the media recorder if it exists and is recording
     if (
       mediaRecorderRef.current &&
