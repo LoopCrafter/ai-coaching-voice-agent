@@ -8,7 +8,7 @@ import { StarIcon } from "lucide-react";
 const testimonials = [
   {
     content:
-      "VoiceCoach AI has transformed my public speaking skills. I went from nervous and unsure to confident and polished in just a few weeks of practice.",
+      "SpeakifyAI has transformed my public speaking skills. I went from nervous and unsure to confident and polished in just a few weeks of practice.",
     author: "Sarah Johnson",
     role: "Marketing Director",
     avatar:
@@ -26,7 +26,7 @@ const testimonials = [
   },
   {
     content:
-      "I've tried several coaching apps, but VoiceCoach AI stands out with its accuracy and personalized approach. It feels like having a professional coach with me at all times.",
+      "I've tried several coaching apps, but SpeakifyAI stands out with its accuracy and personalized approach. It feels like having a professional coach with me at all times.",
     author: "Emily Rodriguez",
     role: "Sales Executive",
     avatar:
@@ -84,8 +84,8 @@ export function TestimonialsSection() {
             Loved by Professionals Worldwide
           </h2>
           <p className="text-lg text-muted-foreground">
-            See how VoiceCoach AI is helping people transform their
-            communication skills and reach their goals.
+            See how SpeakifyAI is helping people transform their communication
+            skills and reach their goals.
           </p>
         </div>
 

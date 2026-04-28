@@ -12,7 +12,7 @@ export function Footer() {
               className="flex items-center gap-2 font-bold text-xl"
             >
               <Headphones className="h-6 w-6 text-primary" />
-              <span>VoiceCoach AI</span>
+              <span>SpeakifyAI</span>
             </Link>
             <p className="text-sm text-muted-foreground">
               Next-generation AI voice coaching for personal and professional
@@ -69,7 +69,7 @@ export function Footer() {
                   About Us
                 </Link>
               </li>
-              
+
               <li>
                 <Link
                   href="/contact"
@@ -115,7 +115,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} VoiceCoach AI. All rights reserved.
+              © {new Date().getFullYear()} SpeakifyAI. All rights reserved.
             </p>
             <div className="mt-4 md:mt-0 flex items-center space-x-6">
               <Link

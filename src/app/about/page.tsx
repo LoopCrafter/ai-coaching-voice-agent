@@ -39,7 +39,7 @@ export default function AboutPage() {
             transition={{ duration: 0.5 }}
             className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
           >
-            About VoiceCoach AI
+            About SpeakifyAI
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -79,9 +79,9 @@ export default function AboutPage() {
           >
             <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
             <p className="text-lg text-muted-foreground mb-6">
-              At VoiceCoach AI, we&apos;re on a mission to revolutionize how
-              people communicate. We believe that effective communication is the
-              key to success in both personal and professional life.
+              At SpeakifyAI, we&apos;re on a mission to revolutionize how people
+              communicate. We believe that effective communication is the key to
+              success in both personal and professional life.
             </p>
             <p className="text-lg text-muted-foreground">
               Our AI-powered platform provides personalized coaching to help you

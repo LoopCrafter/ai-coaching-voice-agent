@@ -26,7 +26,7 @@ const faqs = [
       "Absolutely. We take data privacy seriously. Your voice recordings and personal information are encrypted and stored securely. We never share your data with third parties, and you can delete your recordings at any time.",
   },
   {
-    question: "Can I use VoiceCoach AI in different languages?",
+    question: "Can I use SpeakifyAI in different languages?",
     answer:
       "Currently, we support English (US, UK, AU, CA) with native-level accuracy. We're actively working on expanding to more languages, including Spanish, French, German, and Japanese.",
   },
@@ -67,7 +67,7 @@ export function FaqSection() {
             Frequently Asked Questions
           </h2>
           <p className="text-lg text-muted-foreground">
-            Find answers to common questions about VoiceCoach AI.
+            Find answers to common questions about SpeakifyAI.
           </p>
         </motion.div>
 

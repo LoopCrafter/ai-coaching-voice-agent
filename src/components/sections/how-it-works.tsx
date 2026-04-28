@@ -46,7 +46,7 @@ export function HowItWorksSection() {
         <div className="grid grid-cols-1 lg:grid-cols-1 gap-12 items-center">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              How VoiceCoach AI Works
+              How SpeakifyAI Works
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
               Our platform combines cutting-edge AI technology with proven
